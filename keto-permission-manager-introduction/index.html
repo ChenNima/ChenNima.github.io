@@ -183,7 +183,7 @@ Denied</code></pre></div>
 <p>可以看到输出了拒绝访问, 而<code class="language-text">cat lady</code>由于第1，6，7条规则，是可以访问的</p>
 <div class="gatsby-highlight" data-language="text"><pre class="language-text"><code class="language-text">keto check &quot;cat lady&quot; view videos /cats/2.mp4
 Allowed</code></pre></div>
-<p>如果想搞明白<code class="language-text">/cats/2.mp4</code>可以被谁访问，以及其原因，可以使用<code class="language-text">explain</code></p>
+<p>如果想搞明白<code class="language-text">/cats/2.mp4</code>可以被谁访问，以及其原因，可以使用<code class="language-text">expand</code>命令</p>
 <div class="gatsby-highlight" data-language="bash"><pre class="language-bash"><code class="language-bash">keto <span class="token function">expand</span> view videos /cats/2.mp4
 ∪ videos:/cats/2.mp4<span class="token comment">#view</span>
 ├─ ∪ videos:/cats/2.mp4<span class="token comment">#owner</span>
