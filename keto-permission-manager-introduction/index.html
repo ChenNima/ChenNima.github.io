@@ -106,9 +106,9 @@ data-styled.g10[id="sc-keyframes-iZfknO"]{content:"iZfknO,"}/*!sc*/
 <li>灵活性：各个业务场景的鉴权需求都不尽相同，所以Zanzibar灵活地支持不同的权限模式</li>
 <li>横向扩展：以横向扩展支持数万亿条规则，每秒百万级鉴权</li>
 <li>性能：95%的请求10毫秒内完成，99%的请求100毫秒内完成</li>
-<li>可用性上线三年99.999%可用是时间</li>
+<li>可用性：上线三年间保证了99.999%的可用时间</li>
 </ol>
-<p>以上的各个特性中除了灵活性之外都是性能或算法上的特点，如果有兴趣可以阅读以下这篇论文：<a href="https://research.google/pubs/pub48190/" target="_blank" rel="nofollow noopener noreferrer">Zanzibar: Google’s Consistent, Global Authorization System</a>。下面我们就灵活性这一特点看一下Zanzibar是如何定义鉴权模型的</p>
+<p>以上的各个特性中除了灵活性之外都是性能或算法上的特点，性能和可靠性上也有很大一部分得益于底层的<a href="https://research.google/pubs/pub39966/" target="_blank" rel="nofollow noopener noreferrer">Spanner</a>数据库。如果有兴趣可以阅读以下这篇论文：<a href="https://research.google/pubs/pub48190/" target="_blank" rel="nofollow noopener noreferrer">Zanzibar: Google’s Consistent, Global Authorization System</a>对Zanzibar进行更深入的了解。下面我们就灵活性这一特点看一下Zanzibar是如何定义鉴权模型的。</p>
 <h2>概念与定义</h2>
 <h3>关系元组(Relation Tuples)</h3>
 <p>Relation Tuples是Zanzibar的核心概念，一条Relation Tuples就对应了一条ACL。关系元组由命名空间(Namespace)，对象(Object)，关系(Relation)和主体(Subject)组成。一条Relation Tuples可以用<a href="https://en.wikipedia.org/wiki/Backus%E2%80%93Naur_form" target="_blank" rel="nofollow noopener noreferrer">BNF语法</a>这样描述：</p>
@@ -190,6 +190,51 @@ Allowed</code></pre></div>
 │  ├─ ∪ videos:/cats<span class="token comment">#owner</span>
 │  │  ├─ ☘ <span class="token function">cat</span> lady️</code></pre></div>
 <p>输出的树中<code class="language-text">∪</code>代表了<code class="language-text">Subject Set</code>， 而<code class="language-text">☘</code>代表了最终可以访问<code class="language-text">Object</code>的<code class="language-text">Subject</code>。</p>
+<h2>应用</h2>
+<p>学会了keto和Zanzibar的基础概念和用法后，让我们通过一个例子看一下如何将keto应用到服务的鉴权中去。</p>
+<p>假设我们维护一个多租户的视频服务，我们仅允许特定的视频对某一个租户(tenant)的成员访问。比如下在面这个例子中，我们有一个租户<code class="language-text">cat</code>，视频<code class="language-text">cats.mp4</code>仅允许租户<code class="language-text">cat</code>的<code class="language-text">member</code>观看。对于这个业务我们部署一个<code class="language-text">Profile Service</code>用于用于的注册登陆和验证，以及一个<code class="language-text">Video Service</code>用于为用户提供视频。另外部署了一个Keto服务做集中式的鉴权。</p>
+<p>整个鉴权的流程如下图所示：</p>
+<p><span
+      class="gatsby-resp-image-wrapper"
+      style="position: relative; display: block; margin-left: auto; margin-right: auto; max-width: 700px; "
+    >
+      <a
+    class="gatsby-resp-image-link"
+    href="/static/8759413d80a2b1e05fd8f3004cc44073/c483d/keto-sequence-flow.png"
+    style="display: block"
+    target="_blank"
+    rel="noopener"
+  >
+    <span
+    class="gatsby-resp-image-background-image"
+    style="padding-bottom: 72%; position: relative; bottom: 0; left: 0; background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAOCAYAAAAvxDzwAAAACXBIWXMAAAsTAAALEwEAmpwYAAABZ0lEQVQ4y32TV27EMAxEff87+s+9924reATGUIwgBLQrUuQMm4O6rl0URY5/5L5vl6ap2YZhcOd5mh7Hseu6znye57GDHMdh9rIs3TzPLiBgWRZ74Izj6Pq+d03TGOB1XW7fd9MBzfPcZVlmd4iSJLE7YPgGMBFIEEbY0Nu2NWDskFAB5NyrqjJg2fAjBglAJZh/ykW2bTMgtYA7PhJ8IeeNgz9VGiAZwlQUhTHTC0oiE5wJJgsAyZ6D/7quLyCE6G+GOKkc2GCHAFYOOoAi5k6JvAFEfzWwAAZ6wD9DUekqWRNVOzTd75v8A35QAOIRUPUEm1ZDAV9Q6VT4ZkgJGgSl0MMwDG2SrAV9pSw/K38XfwGSBb3zRTYIpmmybLUW3+z8mD8BFSAHBHYy1OLry2FIkGp3X0ANRYepkpW/FqyUVkgZQ4COP5W8ewggzpowj/7i6iv6r+S3h/oavuLbvmvjD0Q2tegHlQ5D2nOLk7cAAAAASUVORK5CYII='); background-size: cover; display: block;"
+  ></span>
+  <img
+        class="gatsby-resp-image-image"
+        alt="keto-sequence-flow"
+        title="keto-sequence-flow"
+        src="/static/8759413d80a2b1e05fd8f3004cc44073/8c557/keto-sequence-flow.png"
+        srcset="/static/8759413d80a2b1e05fd8f3004cc44073/4edbd/keto-sequence-flow.png 175w,
+/static/8759413d80a2b1e05fd8f3004cc44073/13ae7/keto-sequence-flow.png 350w,
+/static/8759413d80a2b1e05fd8f3004cc44073/8c557/keto-sequence-flow.png 700w,
+/static/8759413d80a2b1e05fd8f3004cc44073/c483d/keto-sequence-flow.png 751w"
+        sizes="(max-width: 700px) 100vw, 700px"
+        style="width:100%;height:100%;margin:0;vertical-align:middle;position:absolute;top:0;left:0;"
+        loading="lazy"
+      />
+  </a>
+    </span></p>
+<p>让我们走一遍整个流程：</p>
+<ol start="0">
+<li>Video Service预先在Keto中写入了一条规则<code class="language-text">videos:cats.mp4#view@(tenants:cat#member)</code>，即仅允许<code class="language-text">tenants:cat</code>的<code class="language-text">member</code>来<code class="language-text">view</code>目标<code class="language-text">videos:cats.mp4</code></li>
+<li>用户<code class="language-text">Felix</code>想要访问<code class="language-text">cats.mp4</code>，但他在系统里并没有注册过，所以以匿名用户的身份对Video Service发起请求</li>
+<li>Video Service接收到请求后向Keto确认主体<code class="language-text">*</code>是否可以访问<code class="language-text">videos:cats.mp4</code>，由于之前写入的规则，请求被Keto判断为拒绝，随即felix的请求也失败了</li>
+<li>felix向Profile Service发起请求注册为租户<code class="language-text">cat</code>的<code class="language-text">member</code>， Profile Service完成注册后向Keto写入了<code class="language-text">tenants:cat#member@felix</code></li>
+<li>注册完成的felix再次向Video Service发起对<code class="language-text">cats.mp4</code>的请求，此时他已经获得了用户<code class="language-text">felix</code>的身份，假设这里他将用户的session放在cookie中发起请求</li>
+<li>Video Service将Cookie中的session提取出来后向Profile Service验证用户，通过后向Keto确认主体<code class="language-text">felix</code>是否可以访问<code class="language-text">videos:cats.mp4</code></li>
+<li>此时由于felix已经是<code class="language-text">tenants:cat</code>的<code class="language-text">member</code>，Keto判定请求通过，最后Video Service将<code class="language-text">cats.mp4</code>返回给Felix</li>
+</ol>
+<p>从这个例子我们可以看到，负责提供视频服务的Video Service自始至终只作了两件事：1. 向Keto写入视频权限规则 2. 向Keto询问某个用户是否有权限。而具体用户的角色<code class="language-text">Role</code>的管理则是由Profile Service统一负责。在这个架构下，我们自己的两个服务在权限这个问题上完全是解耦的，所有的权限规则写入和检验全都由Keto统一负责，显著地增强了整个系统的弹性和可扩展性。</p>
 <h1>总结</h1>
 <p>Zanzibar及其开源实现Ory/Keto致力于实现一套灵活，弹性，可扩展，高可用的鉴权服务体系。Zanzibar在过去的几年中支持了几乎所有的谷歌云上服务，已经印证了它灵活性的价值，而谷歌这一套系统支持全球业务的运维能力也令人赞叹。而Keto也让我们使用这套理念治理自己项目的权限成为可能，但这不意味着Keto就是解决权限问题的银弹，部署一个单独的服务来做中央式权限管理对运维的要求相当高，并且不是每一个项目都需要如此灵活的权限管理。Zanzibar所提出的这套基于<code class="language-text">Relation Tuple</code>的权限管理概念十分值得学习，它找到一个灵活性与复杂度的平衡点，使得相对简单的语法也能支持复杂多变的场景。</p>
 <h3>参考链接</h3>
