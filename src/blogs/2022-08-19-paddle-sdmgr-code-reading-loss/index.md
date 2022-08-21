@@ -89,7 +89,7 @@ def compute_f1_score(self, preds, gts):
 
 第一点，计算F1分数时，会剔除某些类。对应WildReceipt数据集，这里hardcode了一个ignore列表，该列表包含了数据集中分类为`Ignore`，`Other`,以及所有的`Key`分类。这表明了关键信息提取任务实际关心的是票据或文档中那些`Value`的准确度，比如消费金额啊，税额数字，而不是图像中信息的标题。如果你想将SDMGR应用在其他数据集上，一定要记得评估模型时要将hard code`ignores`数组替换成数据集对用的分类。
 
-第二点，这里计算F1分数的过程相当巧妙。首先将所有的分类index乘以分类数，然后加上了预测的分类结果，形成了一个`[node_num]`形状的list，然后对这个list中各个值求`bincount`，即计算list中各个数字出现的次数。因为这个list中最大的数也不会超过`(class_num * class_num)`，计算完`bincount`后的数组就可以reshape成一个`[class_num, class_num]`的`hist`矩阵了。如果分类正确，那么该class对应的数字为`(class_num * class_index + class_index)`，正好落在`hist`矩阵的对角线上。也就意味着将对角线单独拿出，就正好对应了各个class被正确分类的次数，即`ture positive`，这是计算recall与precisions的分母。
+第二点，这里计算F1分数的过程相当巧妙。首先将所有的分类index乘以分类数，然后加上了预测的分类结果，形成了一个`[node_num]`形状的list，然后对这个list中各个值求`bincount`，即计算list中各个数字出现的次数。因为这个list中最大的数也不会超过`(class_num * class_num)`，计算完`bincount`后的数组就可以reshape成一个`[class_num, class_num]`的`hist`矩阵了。如果分类正确，那么该class对应的数字为`(class_num * class_index + class_index)`，正好落在`hist`矩阵的对角线上。也就意味着将对角线单独拿出，就正好对应了各个class被正确分类的次数，即`ture positive`，这是计算recall与precisions的分子。
 
 如果预测分类错误，假设应该被分类为`class_a`的节点被错误分类为了`class_b`则加和的数字范围为`class_num * class_a + class_b`, 落在hist矩阵的第`class_a`行`class_b`列的位置，也就是说hist矩阵的第n行加和，即被分类为为`class_index`为n的总数，也就是`ture positive + false positive`
 
