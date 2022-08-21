@@ -1,7 +1,7 @@
 ---
-path: "/paddle-ocr-kie-sdmgr-loss-and-summary"
+path: "/paddle-ocr-kie-sdmgr-loss-and-evaluation"
 date: 2022-8-19T11:12:03+08:00
-title: "关键信息提取网络SDMGR代码详解(4): 损失函数与总结"
+title: "关键信息提取网络SDMGR代码详解(4): 损失函数与模型评估"
 type: "blog"
 ---
 
@@ -91,17 +91,35 @@ def compute_f1_score(self, preds, gts):
 
 第二点，这里计算F1分数的过程相当巧妙。首先将所有的分类index乘以分类数，然后加上了预测的分类结果，形成了一个`[node_num]`形状的list，然后对这个list中各个值求`bincount`，即计算list中各个数字出现的次数。因为这个list中最大的数也不会超过`(class_num * class_num)`，计算完`bincount`后的数组就可以reshape成一个`[class_num, class_num]`的`hist`矩阵了。如果分类正确，那么该class对应的数字为`(class_num * class_index + class_index)`，正好落在`hist`矩阵的对角线上。也就意味着将对角线单独拿出，就正好对应了各个class被正确分类的次数，即`ture positive`，这是计算recall与precisions的分母。
 
-如果预测分类错误，则加和的数字范围为`(class_num * class_index, class_num * (class_index + 1)]`, 落在hist矩阵的第`class_index`行除了对角线的位置，也就是说hist矩阵的第n行加和，即被分类为为`class_index`为n的总数，也就是`ture positive + false positive`
+如果预测分类错误，假设应该被分类为`class_a`的节点被错误分类为了`class_b`则加和的数字范围为`class_num * class_a + class_b`, 落在hist矩阵的第`class_a`行`class_b`列的位置，也就是说hist矩阵的第n行加和，即被分类为为`class_index`为n的总数，也就是`ture positive + false positive`
 
 而hist矩阵的第n列，对应了第n类分类正确的数量，加上了本因被分为第n类缺分类错误的数量，即`ture positive + false nagative`
 
 结合上述hist矩阵的对角线，按行求和以及按列求和，就可以轻松算出各个分类的recalls与precisions，进而求得F1 score了。
 
+这个过程结合一个例子，使用图像的方法更容易理解： 假设现有5个类，index分别为`[0, 1, 2, 3, 4]`。那么hist矩阵将是一个5 * 5的矩阵
+
+![hist_empty](./grid1.jpg)
+
+假设经过网络的前向计算，将某个标号为第2类的节点正确分类为2，那么代码中
+```python
+(gts * C).astype('int64') + preds.argmax(1)
+```
+该值的计算结果就是2 * 5 + 2 = 12。在hist矩阵中从左上角开始第13格(第一格从0开始)加1。从下图可以很明确地看出这格就是hist矩阵中第2行第2列，正好位于对角线上
+
+![hist_correct](./grid2.jpg)
+
+如果某个节点标号本应为2，但被错误分类为3，那么就应该在hist矩阵中第2 * 5 + 3 = 13格子上加1：
+
+![hist_correct](./grid3.jpg)
+
+该格是hist矩阵中第2行第3列。现在我们可以很简单地观察出，hist矩阵中第n行上所有的数据都代表了该节点的真实标号是第n类，而第m列上的数据代表了该节点经过网络前向计算后，被分类成了第m列。通过加和对角线，各行以及各列的总数，我们就能轻松计算出F1 score了。
+
 # 3.总结
 
-整个PaddleOCR实现的SDMGR网络代码解析到这就告一段落了。在[Transformer](https://arxiv.org/abs/1706.03762)架构出现后的这几年里，在NLP与CV领域的应用可谓是大杀四方，大有取代CNN与RNN之势。也正是因为Transformer架构的通用性和强劲的性能，最近类似于[ViLT](https://arxiv.org/abs/2102.03334)的基于Transformer的多模态模型可谓是百花齐放。而在此背景下，`SDMGR`仍然创新性地使用了图神经网络，融合了CNN与RNN处理地特征，以远小于Transformer的计算代价完成了对文档类图片的多模态关键信息提取任务。
+整个PaddleOCR实现的SDMGR网络代码解析到这就告一段落了。在[Transformer](https://arxiv.org/abs/1706.03762)架构出现后的这几年里，在NLP与CV领域的应用可谓是大杀四方，大有取代CNN与RNN之势。也正是因为Transformer架构的通用性和强劲的性能，最近类似于[ViLT](https://arxiv.org/abs/2102.03334)的基于Transformer的多模态模型可谓是百花齐放。而在此背景下，`SDMGR`仍然创新性地使用了图神经网络，融合了CNN与RNN处理地特征，结合对关键信息提取问题的诸多归纳偏置，以远小于Transformer的计算代价完成了对文档类图片的多模态KIE任务。虽然不及Transformer架构模型那用的通用，但其相同性能下简单的结构和较小的计算量使得在工业应用上也更加方便。
 
-另外相当推荐大家阅读一下`ViLT`的论文，除了贡献了性能优越的多模态模型外，将这篇论文当作近几年的多模态文献综述也相当不错。也可以看看[Yi Zhu老师在B站上的视频](https://www.bilibili.com/video/BV14r4y1j74y)
+另外相当推荐大家阅读一下`ViLT`的论文，除了贡献了性能优越的多模态模型外，将这篇论文当作近几年的多模态文献综述也相当不错。也可以看看[朱毅老师在B站上的视频](https://www.bilibili.com/video/BV14r4y1j74y)
 
 ### 参考链接
 1. https://en.wikipedia.org/wiki/Cross_entropy
