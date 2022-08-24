@@ -10,9 +10,9 @@ lang: "zh"
  - **陈逸斐**/男
  - 研究生/2017年毕业/华东理工大学 计算机科学与技术
  - 本科/2014年毕业/华东理工大学 环境工程
- - 博客：https://chennima.github.io/blog
- - Github：https://github.com/ChenNima
- - LinkedIn: https://www.linkedin.com/in/yifei-chen-990199110/
+ - 博客：[https://chennima.github.io/blog](https://chennima.github.io/blog)
+ - Github：[https://github.com/ChenNima](https://github.com/ChenNima)
+ - LinkedIn：[https://www.linkedin.com/in/yifei-chen-990199110/](https://www.linkedin.com/in/yifei-chen-990199110/)
  - 邮箱：fennu637@sina.com<span class="d-none"> / 手机：18918561263</span>
 
 # 工作经历

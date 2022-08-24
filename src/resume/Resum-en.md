@@ -10,10 +10,10 @@ lang: "en"
  - **Felix Chen**/Male
  - Master/Graduated at 2017/East China University of Science and Technology/Computer Science and Technology
  - Bachelor/Graduated at 2014/East China University of Science and Technology/Environment Engineering
- - Blog：https://chennima.github.io/blog
- - Github：https://github.com/ChenNima
- - LinkedIn: https://www.linkedin.com/in/yifei-chen-990199110/
- - E-mail：fennu637@sina.com<span class="d-none"> / Phone：18918561263</span>
+ - Blog: [https://chennima.github.io/blog](https://chennima.github.io/blog)
+ - Github: [https://github.com/ChenNima](https://github.com/ChenNima)
+ - LinkedIn: [https://www.linkedin.com/in/yifei-chen-990199110/](https://www.linkedin.com/in/yifei-chen-990199110/)
+ - E-mail: fennu637@sina.com<span class="d-none"> / Phone：18918561263</span>
 
 # Working Experience
 
