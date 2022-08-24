@@ -19,7 +19,7 @@ lang: "en"
 
 ## SAP Labs China （ 2016.10 ~  ）
 Web development(Frontend/backend), DevOps and data engineer
-### Senior Full Stack Developer/<small>SAP Concur</small> （ 2021.1 ~  ）
+### **Senior Full Stack Developer**/<small>SAP Concur</small> （ 2021.1 ~  ）
 
 Participate in the development of "SAP Concur eFapiao", what is a fapiao auto-recognition and validation system base on `NodeJS` and WeChat mini program.
 
@@ -33,7 +33,7 @@ Participate in the development of "SAP Concur eFapiao", what is a fapiao auto-re
   - Deploying OCR model base on `PaddleOCR` to mark those unrecognized fields of fapiao image
   - Training key information extraction model base on `SDMG-R` model and perform information extraction from fapiao image
 
-### Senior DevOps/<small>SAP Jam Collaboration</small> （ 2020.3 ~ 2020.12 ）
+### **Senior DevOps**/<small>SAP Jam Collaboration</small> （ 2020.3 ~ 2020.12 ）
 
 SAP Jam Collaboration(a.k.a Jam) is a collaboration tool based on `Ruby on Rails` as backend and `React`，`BackboneJS` as frontend.
 
@@ -41,7 +41,7 @@ SAP Jam Collaboration(a.k.a Jam) is a collaboration tool based on `Ruby on Rails
 
 - Work with international teams. Achieved around-the-clock support of DevOps topics across multiple timezone.
 
-### DevOps/<small>SAP Jam Collaboration</small>（ 2019.3 ~ 2020.3 ）
+### **DevOps**/<small>SAP Jam Collaboration</small>（ 2019.3 ~ 2020.3 ）
 
 - Migrate the whole project to AWS `Kubernetes` from SAP owned data-center which was deployed with docker container 
 - Writing `Terraform` for managing infrastructure
@@ -49,7 +49,7 @@ SAP Jam Collaboration(a.k.a Jam) is a collaboration tool based on `Ruby on Rails
 - Utilizing `ArgoCD` for implementing `GitOps` workflow
 - Deploying `Istio` service mesh and implementing canary deployment, traffic monitoring and etc
 
-### Full Stack Developer/<small>SAP Jam Collaboration</small> （ 2017.10 ~ 2019.3 ）
+### **Full Stack Developer**/<small>SAP Jam Collaboration</small> （ 2017.10 ~ 2019.3 ）
 Both frontend and backend(`Ruby/NodeJS/Golang`) development. 
 
 - Frontend:
@@ -60,11 +60,11 @@ Both frontend and backend(`Ruby/NodeJS/Golang`) development.
   - Implementing micro-services based on `NodeJS`, including `server-side-rendering` service for React components and pre-rendering service for `SEO`
   - Implementing file storage service based on `Golang`. The major purpose was providing a unified interface for storing files to media like `NAS file system`, `AWS S3 Bucket`, `Azure Blob Storage` and etc
 
-### Frontend Developer/<small>SAP Jam Community</small> （ 2016.10 ~  2017.10 ）
+### **Frontend Developer**/<small>SAP Jam Community</small> （ 2016.10 ~  2017.10 ）
 SAP Jam Community is a social platform based on `EmberJS`/`Vue` and `Ruby on rails`. During this period of job, my major job was frontend developing. Other then creating `EmberJS` component, I also wrote a front-back-end-separated management tool using `Vue`.
 ## CareerBuilder China （ 2016.4 ~  2016.10 ）
 
-### Intern Web developer
+### **Intern Web developer**
 Implement web service based on `AngularJS`/`Ruby on Rails`/`NodeJS`
 # Certifications
 

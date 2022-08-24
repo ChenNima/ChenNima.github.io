@@ -32,7 +32,7 @@ Web应用(前后端)开发，DevOps以及数据工程师。
   - 部署基于`PaddleOCR`的OCR模型，辅助标注发票图片识别不准确的字段
   - 训练基于`SDMG-R`模型的关键信息提取模型，实现从图片中提取发票相关的关键字段
 
-### Senior DevOps/<small>SAP Jam Collaboration</small> （ 2020年3月 ~ 2020年12月 ）
+### **Senior DevOps**/<small>SAP Jam Collaboration</small> （ 2020年3月 ~ 2020年12月 ）
 
 SAP Jam Collaboration(以下简称Jam)是一个基于`Ruby on Rails`后台/`React`，`BackboneJS`为前端的团队协作工具。
 
@@ -40,14 +40,14 @@ SAP Jam Collaboration(以下简称Jam)是一个基于`Ruby on Rails`后台/`Reac
 - 带领Devops团队改造现有运维架构，包括引入`Consul`与原有的`HAproxy`配合实现动态服务注册/发现和`Service Mesh`，在传统数据中心缺乏Kubernetes基础设施支持的情况下实现服务发现；使用`Prometheus`改造原有的日志系统与监控系统。
 - 与跨国团队合作，实现多个时区不间断地共同支持DevOps工作
 
-### DevOps/<small>SAP Jam Collaboration</small> （ 2019年3月 ~ 2020年3月 ）
+### **DevOps**/<small>SAP Jam Collaboration</small> （ 2019年3月 ~ 2020年3月 ）
 
 - 将使用Docker部署在自有数据中心项目迁移至AWS上的`Kubernetes`环境
 - 编写`Terraform`用以管理集群基础设施
 - 将应用的各个微服务拆分为独立的`Helm Charts`并分别部署
 - 使用`ArgoCD`实现`GitOps`流程；部署`Istio` Service Mesh并实现金丝雀部署，流量监控等功能。
 
-### Full Stack Developer/<small>SAP Jam Collaboration</small> （ 2017年10月 ~ 2019年3月 ）
+### **Full Stack Developer**/<small>SAP Jam Collaboration</small> （ 2017年10月 ~ 2019年3月 ）
 
 包括前端以及后端（`Ruby/NodeJS/Golang`）开发。
 
@@ -60,12 +60,12 @@ SAP Jam Collaboration(以下简称Jam)是一个基于`Ruby on Rails`后台/`Reac
   - 开发基于NodeJS的微服务，包括实现React组件的`服务端渲染`服务以及基于`Puppeteer`的`SEO`预渲染服务
   - 开发基于`Golang`的文件存储微服务。主要提供一套通用接口，实现将文件存储至`NAS文件系统`，`AWS S3 Bucket`，`Azure Blob Storage`等存储介质。
 
-### Frontend Developer/<small>SAP Jam Community</small> （ 2016年10月 ~  2017年10月 ）
+### **Frontend Developer**/<small>SAP Jam Community</small> （ 2016年10月 ~  2017年10月 ）
 SAP Jam Community是一款基于`EmberJS`/`Vue`和`Ruby on rails`的社交平台。在这段工作中主要担任前端开发，除编写`EmberJS`组件外，还使用`Vue`为项目编写前后端分离的管理工具。
 
 ## CareerBuilder China （ 2016年4月 ~  2016年10月 ）
 
-### Intern Web developer
+### **Intern Web developer**
 
 编写基于`AngularJS`/`Ruby on Rails`/`NodeJS`的web服务
 
@@ -82,7 +82,7 @@ SAP Jam Community是一款基于`EmberJS`/`Vue`和`Ruby on rails`的社交平台
 - Web框架: React/Vue/NestJS
 - 数据工程: AWS Athena, AWS DynamoDB
 
-### 解
+### 了解
 - Web开发: Ruby on Rails/GraphQL/Golang/SEO
 - DevOps: Jenkins `Groovy`/Service Mesh/AWS/Git Ops
 - Kubernetes相关: Istio/EFK/Helm/ArgoCD
