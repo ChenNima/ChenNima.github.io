@@ -254,6 +254,8 @@ return node_cls, edge_cls
 
 下一篇文章会继续介绍损失函数与评估函数。
 
+[关键信息提取网络SDMGR代码详解(4): 损失函数与模型评估](/paddle-ocr-kie-sdmgr-loss-and-evaluation)
+
 ### 参考链接
 1. https://en.wikipedia.org/wiki/Long_short-term_memory
 2. https://zh.m.wikipedia.org/zh/%E5%85%8B%E7%BD%97%E5%86%85%E5%85%8B%E7%A7%AF

@@ -270,6 +270,7 @@ embed_edges <span class="token operator">=</span> F<span class="token punctuatio
 <h1>5.总结</h1>
 <p>今天这篇文章从从代码角度介绍了整个SDMGR网络的词嵌入，循环神经网络，特征融合以及图神经网络部分。至此我们已经完整介绍了整个网络的结构，可以看到SDMGR将<code class="language-text">U-Net</code>和<code class="language-text">LSTM</code>作为Encoder抽取特征，图神经网络作为残差连接块，最后使用全连接层使用Decoder输出分类的思路是非常清晰的，在图神经网络模块还使用了动态注意力机制来学习文字区域之间的空间信息。</p>
 <p>下一篇文章会继续介绍损失函数与评估函数。</p>
+<p><a href="/paddle-ocr-kie-sdmgr-loss-and-evaluation">关键信息提取网络SDMGR代码详解(4): 损失函数与模型评估</a></p>
 <h3>参考链接</h3>
 <ol>
 <li><a href="https://en.wikipedia.org/wiki/Long_short-term_memory" target="_blank" rel="nofollow noopener noreferrer">https://en.wikipedia.org/wiki/Long_short-term_memory</a></li>
