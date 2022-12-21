@@ -181,7 +181,7 @@ LOCATION
 <p>创建完成后，就可以使用Trino SQL在Athena中查询数据了:</p>
 <div class="gatsby-highlight" data-language="sql"><pre class="language-sql"><code class="language-sql"><span class="token keyword">SELECT</span> <span class="token operator">*</span> <span class="token keyword">FROM</span> <span class="token string">"accounts"</span> <span class="token keyword">limit</span> <span class="token number">10</span><span class="token punctuation">;</span></code></pre></div>
 <p>每次查询的结果都会保存为csv格式存放在指定的S3目录下。</p>
-<h2>3.1 Glue Crawler</h2>
+<h2>3.2 Glue Crawler</h2>
 <p>手动使用SQL创建表很方便，但是仍然有很多问题:</p>
 <ul>
 <li>如果底层json数据的schema有变化，例如新增字段了，需要手动维护表结构</li>

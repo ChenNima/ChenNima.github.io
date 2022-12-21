@@ -101,7 +101,7 @@ SELECT * FROM "accounts" limit 10;
 ```
 每次查询的结果都会保存为csv格式存放在指定的S3目录下。
 
-## 3.1 Glue Crawler
+## 3.2 Glue Crawler
 
 手动使用SQL创建表很方便，但是仍然有很多问题:
 - 如果底层json数据的schema有变化，例如新增字段了，需要手动维护表结构
