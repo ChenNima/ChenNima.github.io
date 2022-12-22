@@ -185,16 +185,31 @@ LOCATION
 <p>手动使用SQL创建表很方便，但是仍然有很多问题:</p>
 <ul>
 <li>如果底层json数据的schema有变化，例如新增字段了，需要手动维护表结构</li>
-<li>数据查询时会扫描所有的json文件，因为Schema-on-read并不像传统SQL一样会建立index。数据插入时是没有Schema的，所以不具备动态维护index的条件</li>
+<li>数据查询时会扫描所有的json文件，因为Schema-on-read并不像传统SQL一样会建立index。数据插入时是没有Schema的并且是直接将文件上传至S3，所以不具备动态维护index的条件</li>
 </ul>
-<p>为了解决这些问题，我们可以使用Glue Crawler来自动爬取S3中数据的Schema，并为数据创建partition。</p>
+<p>为了解决这些问题，我们可以使用Glue Crawler来自动爬取S3中数据的Schema，并自动为数据创建partition。</p>
 <p>首先，我们为Crawler指定一个目标S3路径，比如</p>
 <div class="gatsby-highlight" data-language="text"><pre class="language-text"><code class="language-text">s3://athena-data/accounts/</code></pre></div>
 <p>以及输出的database，那么Crawler就会扫描<code class="language-text">s3://athena-data/accounts/</code>下的文件(可以配置成仅扫描上次扫描以来的新增文件)，并在目标database中创建一张名为"accounts"的表(与S3目标地址最后一级目录名相同)。在扫描的过程中，crawler会自动按照文件的格式选取合适的SerDe进行序列化/反序列化，并提取文件中的字段形成对应的Schema储存在表结构中。</p>
-<p>其次，为了提高查询时的效率，我们需要为table创建partition。Partition是通过文件夹结构创建在数据某些字段上的。例如上述的<code class="language-text">accounts</code>数据，如果现在想按照"state"和"city"字段创建partition，使得我们在查询某个"city"数据时不会去扫描别的city目录下的数据，我们需要将同一个state和city的数据组织在同一个目录下，例如:</p>
+<p>其次，为了提高查询时的效率，我们需要为table创建partition。每个partition包含全体数据的一个子集，这样当查询的<code class="language-text">where</code>条件匹配了partition的字段，Athena就会只在该partition的文件内查询，从而提高效率。例如上述"accounts"表创建时加入partition字段</p>
+<div class="gatsby-highlight" data-language="sql"><pre class="language-sql"><code class="language-sql">PARTITIONED <span class="token keyword">BY</span> <span class="token punctuation">(</span> 
+  <span class="token punctuation">`</span>city<span class="token punctuation">`</span> string<span class="token punctuation">,</span>
+  <span class="token punctuation">`</span>state<span class="token punctuation">`</span> string<span class="token punctuation">)</span></code></pre></div>
+<p>并且储存数据的时候把不同'state'和'city'的数据分开存放，例如</p>
+<div class="gatsby-highlight" data-language="text"><pre class="language-text"><code class="language-text">s3://athena-data/accounts/va/nogal/accounts.json</code></pre></div>
+<p>然后手动添加partition</p>
+<div class="gatsby-highlight" data-language="sql"><pre class="language-sql"><code class="language-sql"><span class="token keyword">ALTER</span> <span class="token keyword">TABLE</span> accounts <span class="token keyword">ADD</span>
+  <span class="token keyword">PARTITION</span> <span class="token punctuation">(</span>state <span class="token operator">=</span> <span class="token string">'va'</span><span class="token punctuation">,</span> city <span class="token operator">=</span> <span class="token string">'nogal'</span><span class="token punctuation">)</span> LOCATION <span class="token string">'s3://athena-data/accounts/va/nogal/'</span></code></pre></div>
+<p>那么在查询</p>
+<div class="gatsby-highlight" data-language="sql"><pre class="language-sql"><code class="language-sql"><span class="token keyword">SELECT</span> <span class="token operator">*</span> <span class="token keyword">FROM</span> <span class="token string">"accounts"</span> <span class="token keyword">where</span> city<span class="token operator">=</span><span class="token string">'nogal'</span> <span class="token keyword">limit</span> <span class="token number">10</span><span class="token punctuation">;</span></code></pre></div>
+<p>时，只会扫描<code class="language-text">s3://athena-data/accounts/va/nogal/</code>下的文件。</p>
+<p>然而手动添加过于繁琐，如果想要实现自动添加partition，那么在存放文件的时候符合一定的格式，并且这个格式是与<a href="https://hive.apache.org/" target="_blank" rel="nofollow noopener noreferrer">Apache Hive</a>所使用的格式是一致的。例如上述的<code class="language-text">accounts</code>数据，如果现在想按照"state"和"city"字段创建partition，需要按照如下格式组织文件。</p>
 <div class="gatsby-highlight" data-language="text"><pre class="language-text"><code class="language-text">s3://athena-data/accounts/state=va/city=nogal/accounts.json
 s3://athena-data/accounts/state=tn/city=dante/accounts.json</code></pre></div>
-<p>使用这种形如<code class="language-text">key=value</code>格式的文件夹名，那么crawler在爬取数据的时候就会自动在data catalog中加入对应的partition。当我们运行SQL</p>
+<p>使用这种形如<code class="language-text">key=value</code>格式的文件夹名，并且创建表的时候也添加了对应的<code class="language-text">PARTITIONED BY</code>字段，那么运行</p>
+<div class="gatsby-highlight" data-language="sql"><pre class="language-sql"><code class="language-sql">MSCK REPAIR <span class="token keyword">TABLE</span> accounts<span class="token punctuation">;</span></code></pre></div>
+<p>就会为所有检测到的文件夹自动创建partition了。该操作也与<code class="language-text">Hive</code>保持一致。</p>
+<p>上述的方法比较适合固定不变的数据，如果数据变动有新的文件夹被创建，那么就需要手动再跑一次<code class="language-text">MSCK REPAIR TABLE accounts</code>才能创建出新的partition。对于变动的数据，Glue Crawler在爬取数据的时候就会自动在data catalog中加入对应的partition。当我们运行SQL</p>
 <div class="gatsby-highlight" data-language="sql"><pre class="language-sql"><code class="language-sql"><span class="token keyword">SELECT</span> <span class="token operator">*</span> <span class="token keyword">FROM</span> <span class="token string">"accounts"</span> <span class="token keyword">where</span> city<span class="token operator">=</span><span class="token string">'nogal'</span> <span class="token keyword">limit</span> <span class="token number">10</span><span class="token punctuation">;</span></code></pre></div>
 <p>加入其他state文件夹中不存在名为'city=nogal'的文件夹了，那么这次查询Athena只会扫描<code class="language-text">s3://athena-data/accounts/state=va/city=nogal/</code>下的文件。</p>
 <p>此时我们查看表<code class="language-text">accounts</code>的创建DDL</p>
@@ -234,7 +249,7 @@ TBLPROPERTIES <span class="token punctuation">(</span>
   <span class="token string">'recordCount'</span><span class="token operator">=</span><span class="token string">'1309'</span><span class="token punctuation">,</span> 
   <span class="token string">'sizeKey'</span><span class="token operator">=</span><span class="token string">'630830'</span><span class="token punctuation">,</span> 
   <span class="token string">'typeOfData'</span><span class="token operator">=</span><span class="token string">'file'</span><span class="token punctuation">)</span></code></pre></div>
-<p>可以看到除了一些crawler的元信息外，主要多了<code class="language-text">PARTITIONED BY</code>字段。并且将来有更多数据加入数据湖时，定期使用Crawler爬取数据可以自动更新表结构和Partition。需要注意的是如果有新的partition文件夹产生了，那么这些新partition中的数据在被Crawler爬取或手动增加partition之前，是无法被查询到的。</p>
+<p>可以看到除了一些crawler的元信息外，Crawler自动为我们添加了PARTITIONED BY`字段。并且将来有更多数据加入数据湖时，定期使用Crawler爬取数据可以自动更新表结构和Partition。需要注意的是如果有新的partition文件夹产生了，那么这些新partition中的数据在被Crawler爬取或手动增加partition之前，是无法被查询到的。</p>
 <h1>4. 总结</h1>
 <p>这次我们从总体上了解了构成AWS数据湖的几个最基本的服务：AWS S3, Athena和Glue，并介绍了他们各自在整个数据湖架构中的位置和作用。在下篇文章中，我们详细了解如何搭建这一套解决方案，并通过解决一些实际的问题:</p>
 <ul>
@@ -250,6 +265,7 @@ TBLPROPERTIES <span class="token punctuation">(</span>
 <li><a href="https://trino.io/Presto_SQL_on_Everything.pdf" target="_blank" rel="nofollow noopener noreferrer">https://trino.io/Presto_SQL_on_Everything.pdf</a></li>
 <li><a href="https://aws.amazon.com/glue/" target="_blank" rel="nofollow noopener noreferrer">https://aws.amazon.com/glue/</a></li>
 <li><a href="http://ndjson.org/" target="_blank" rel="nofollow noopener noreferrer">http://ndjson.org/</a></li>
+<li><a href="https://hive.apache.org/" target="_blank" rel="nofollow noopener noreferrer">https://hive.apache.org/</a></li>
 </ol></article></div></div><div class="cc-statement-sc-1u2jbzw-0 jhCLBz"><div class=" gatsby-image-wrapper" style="position:relative;overflow:hidden;display:inline-block;width:88px;height:31px"><img aria-hidden="true" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAHCAYAAAAIy204AAAACXBIWXMAAAsTAAALEwEAmpwYAAAB/klEQVQozx2RP09acRSGb2KMIm4SqyR28wMQB5MWTe3iaLHGyVRAAUVQEGy4ULW0tqJQ+e8lwLUOVOHqUqofwKlM7dSa+hFMnEw7/p56GU7ynrx5znlPjiRvyv9OtRPmXs0J20sbnmUPel89rrB3kGDBvYBz0cn2zhbZwwyrwVWcLifyVoScksW97NJ98eZtjOBG8K9UPioTDAXF+dk5t7e3lEol1sPr/Pz1g53dHWq1Gpqmkcml8Qd8+Fd8NOp1ikqRDXkDnbv+fc1B+kDImxEku9MuEokEl5eXotFocHV1RSwWQ6kcoh6pNL8220u0M62d9PTLCWs+P9vbW7iX3LS+t9DqddFsNrEv2oU075inUCjg9XqZnp5GURRUVUU9rlL5XCGZSpLP5/m494FUNkmhWCC5v0/odYhPuRTpTJqLbxfE38d5txtH0s+VozI3f27E/f09rVYLz5KHWr1GSVXwB334AiukHuBCOc/Kg/auetvDDqtFAuE1HC6HSGb2CUfCQhp6PKQ/QkSjUarVCqFwCJfHRbehm/7+fmZnZ7FarRiNRnp6epiZmWHqxRQmk4mOjg5sNhsOp4Ph4WEhSRIPJd31mfqYeD4hnlqfMP5svA3r5uDgIGNjYww8GqCrqwuDwcDIyAijo6P09vbS2dmJxWJhcnJSmM1mnbn7D4p4RNNeFMMhAAAAAElFTkSuQmCC" alt="" style="position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;object-position:center;opacity:1;transition-delay:500ms"/><noscript><picture><source srcset="/static/0a798fcfb6a91fca527dc8e232018297/a8068/CC-BY-NC-ND.png 1x" /><img loading="lazy" width="88" height="31" srcset="/static/0a798fcfb6a91fca527dc8e232018297/a8068/CC-BY-NC-ND.png 1x" src="/static/0a798fcfb6a91fca527dc8e232018297/a8068/CC-BY-NC-ND.png" alt="" style="position:absolute;top:0;left:0;opacity:1;width:100%;height:100%;object-fit:cover;object-position:center"/></picture></noscript></div><p>本作品采用<a href="http://creativecommons.org/licenses/by/4.0/" target="_blank">知识共享署名4.0署名-非商业性使用-禁止演绎(BY-NC-ND)国际许可协议</a>进行许可，转载时请注明原文链接，图片在使用时请保留全部内容，但不得对本创作进行修改，亦不得依据本创作进行再创作，不得将本创作运用于商业用途。</p></div></main></div><footer class="footer-sc-1ejc99w-0 fvBZqb"><div class="container"><span class="unit">© <!-- -->2022<!-- -->, Built with<!-- --> <a href="https://www.gatsbyjs.org">Gatsby</a></span><span class="unit">Created by Felix</span><span class="unit"><a target="_blank" href="https://github.com/ChenNima">Github</a></span><span class="unit"><span class="oi oi-envelope-closed"></span> <!-- -->Email:<!-- --> <a href="mailto:fennu637@sina.com">fennu637@sina.com</a></span></div></footer></div><div id="gatsby-announcer" style="position:absolute;top:0;width:1px;height:1px;padding:0;overflow:hidden;clip:rect(0, 0, 0, 0);white-space:nowrap;border:0" aria-live="assertive" aria-atomic="true"></div></div><script>
   
   

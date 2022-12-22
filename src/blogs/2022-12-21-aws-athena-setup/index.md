@@ -105,9 +105,9 @@ SELECT * FROM "accounts" limit 10;
 
 手动使用SQL创建表很方便，但是仍然有很多问题:
 - 如果底层json数据的schema有变化，例如新增字段了，需要手动维护表结构
-- 数据查询时会扫描所有的json文件，因为Schema-on-read并不像传统SQL一样会建立index。数据插入时是没有Schema的，所以不具备动态维护index的条件
+- 数据查询时会扫描所有的json文件，因为Schema-on-read并不像传统SQL一样会建立index。数据插入时是没有Schema的并且是直接将文件上传至S3，所以不具备动态维护index的条件
 
-为了解决这些问题，我们可以使用Glue Crawler来自动爬取S3中数据的Schema，并为数据创建partition。
+为了解决这些问题，我们可以使用Glue Crawler来自动爬取S3中数据的Schema，并自动为数据创建partition。
 
 首先，我们为Crawler指定一个目标S3路径，比如
 ```
@@ -115,12 +115,39 @@ s3://athena-data/accounts/
 ```
 以及输出的database，那么Crawler就会扫描`s3://athena-data/accounts/`下的文件(可以配置成仅扫描上次扫描以来的新增文件)，并在目标database中创建一张名为"accounts"的表(与S3目标地址最后一级目录名相同)。在扫描的过程中，crawler会自动按照文件的格式选取合适的SerDe进行序列化/反序列化，并提取文件中的字段形成对应的Schema储存在表结构中。
 
-其次，为了提高查询时的效率，我们需要为table创建partition。Partition是通过文件夹结构创建在数据某些字段上的。例如上述的`accounts`数据，如果现在想按照"state"和"city"字段创建partition，使得我们在查询某个"city"数据时不会去扫描别的city目录下的数据，我们需要将同一个state和city的数据组织在同一个目录下，例如:
+其次，为了提高查询时的效率，我们需要为table创建partition。每个partition包含全体数据的一个子集，这样当查询的`where`条件匹配了partition的字段，Athena就会只在该partition的文件内查询，从而提高效率。例如上述"accounts"表创建时加入partition字段
+```sql
+PARTITIONED BY ( 
+  `city` string,
+  `state` string)
+```
+并且储存数据的时候把不同'state'和'city'的数据分开存放，例如
+```
+s3://athena-data/accounts/va/nogal/accounts.json
+```
+然后手动添加partition
+```sql
+ALTER TABLE accounts ADD
+  PARTITION (state = 'va', city = 'nogal') LOCATION 's3://athena-data/accounts/va/nogal/'
+```
+那么在查询
+```sql
+SELECT * FROM "accounts" where city='nogal' limit 10;
+```
+时，只会扫描`s3://athena-data/accounts/va/nogal/`下的文件。
+
+然而手动添加过于繁琐，如果想要实现自动添加partition，那么在存放文件的时候符合一定的格式，并且这个格式是与[Apache Hive](https://hive.apache.org/)所使用的格式是一致的。例如上述的`accounts`数据，如果现在想按照"state"和"city"字段创建partition，需要按照如下格式组织文件。
 ```
 s3://athena-data/accounts/state=va/city=nogal/accounts.json
 s3://athena-data/accounts/state=tn/city=dante/accounts.json
 ```
-使用这种形如`key=value`格式的文件夹名，那么crawler在爬取数据的时候就会自动在data catalog中加入对应的partition。当我们运行SQL
+使用这种形如`key=value`格式的文件夹名，并且创建表的时候也添加了对应的`PARTITIONED BY`字段，那么运行
+```sql
+MSCK REPAIR TABLE accounts;
+```
+就会为所有检测到的文件夹自动创建partition了。该操作也与`Hive`保持一致。
+
+上述的方法比较适合固定不变的数据，如果数据变动有新的文件夹被创建，那么就需要手动再跑一次`MSCK REPAIR TABLE accounts`才能创建出新的partition。对于变动的数据，Glue Crawler在爬取数据的时候就会自动在data catalog中加入对应的partition。当我们运行SQL
 
 ```sql
 SELECT * FROM "accounts" where city='nogal' limit 10;
@@ -168,7 +195,7 @@ TBLPROPERTIES (
   'sizeKey'='630830', 
   'typeOfData'='file')
 ```
-可以看到除了一些crawler的元信息外，主要多了`PARTITIONED BY`字段。并且将来有更多数据加入数据湖时，定期使用Crawler爬取数据可以自动更新表结构和Partition。需要注意的是如果有新的partition文件夹产生了，那么这些新partition中的数据在被Crawler爬取或手动增加partition之前，是无法被查询到的。
+可以看到除了一些crawler的元信息外，Crawler自动为我们添加了PARTITIONED BY`字段。并且将来有更多数据加入数据湖时，定期使用Crawler爬取数据可以自动更新表结构和Partition。需要注意的是如果有新的partition文件夹产生了，那么这些新partition中的数据在被Crawler爬取或手动增加partition之前，是无法被查询到的。
 
 # 4. 总结
 这次我们从总体上了解了构成AWS数据湖的几个最基本的服务：AWS S3, Athena和Glue，并介绍了他们各自在整个数据湖架构中的位置和作用。在下篇文章中，我们详细了解如何搭建这一套解决方案，并通过解决一些实际的问题:
@@ -184,3 +211,4 @@ TBLPROPERTIES (
 5. https://trino.io/Presto_SQL_on_Everything.pdf
 6. https://aws.amazon.com/glue/
 7. http://ndjson.org/
+8. https://hive.apache.org/
