@@ -17,9 +17,9 @@ type: "blog"
 
 在图中，整个数据湖及其下游架构包含了相当多的服务，而我们这次只需要了解构成数据湖的最基本服务:
 
-- AWS S3: 文件存储系统，S3之于数据湖就好像`HDFS`之于`Hadoop`。在AWS数据湖概念中，基本上S3是所有数据存放的地方，也就是“湖”这个概念本身。而将数据放入“湖”中，即是简单地将文件通过API存入S3桶。
+- AWS S3: 文件存储系统，S3之于数据湖就好像`HDFS`之于`Hadoop`。在AWS数据湖概念中，基本上S3是所有数据存放的地方，也就是“湖”这个概念本身。而将数据放入“湖”中，既可以简单地通过API将文件存储到S3桶中，也可以使用`Glue`从各个源头通过写入`Data catalog`的方式，最终存入S3中。
 - AWS Athena: 在有了“湖”后，下一个需要解决的问题是如何从湖中获取数据。Athena基于[Trino/Presto](https://trino.io/)引擎和[Apache Spark](https://spark.apache.org/)框架实现了通过SQL来查询数据湖中的数据。
-- AWS Glue: 包含在Glue中的服务非常多，而其中最关键的部分是`Data catalog`。如上文所提到的，数据湖是一个Schema-on-read系统，而AWS Glue就扮演了这个"Schema"的角色。当使用Athena查询数据时，需要选择定义在Glue中的Schema，将类似JSON文件的无Schema数据序列化后读取出来。
+- AWS Glue: 包含在Glue中的服务非常多，而其中最关键的部分是`Data catalog`。如上文所提到的，数据湖是一个Schema-on-read系统，而AWS Glue Data Catalog就扮演了这个"Schema"的角色，同时也将抽象的`Table`与实际储存在S3中的文件关联了起来。当使用Athena查询数据时，需要选择数据所属的`Table`，即定义在Glue中的Schema，将类似JSON文件的无Schema数据序列化后读取出来。而从各个数据源头读取数据并存入S3的时候，也可以选择数据的目标`Table`，从而将数据的读写接口与数据实际储存的位置区分开来。这一层抽象使得`Data catalog`这个概念也对数据网格`Data Mesh`至关重要。关于`Data Mesh`的内容我们在之后的文章中再详细介绍。
 
 ![athena-glue](./athena-glue.png)
 
@@ -61,14 +61,14 @@ Trino提供了[ANSI SQL](https://blog.ansi.org/2018/10/sql-standard-iso-iec-9075
 说一些题外话：`Trino/Presto`一开始是2012年左右在Facebook内部开始的项目。Presto的创始团队是开源文化的拥趸，并且将Presto也打造成了一个开源项目，并和Airbnb, Dropbox, Netflix等公司的工程师们一起改善Presto。但对于Facebook来说打造完全开源的产品并维护一个良好的开源社区显然不是第一要务，相信大家从臭名昭著的[React BSD+Patent license](https://medium.com/@raulk/if-youre-a-startup-you-should-not-use-react-reflecting-on-the-bsd-patents-license-b049d4a67dd2)事件多少可以看得出Facebook的态度。虽然React的lisence最后还是改成了MIT，但Presto就没那么好运了。2018年Facebook开始收紧对Presto的约束并要求把代码的写权限开放给毫无经验的Facebook工程师们。五位创始人别无选择，只能离开Facebook并把Presto更名为Trino继续用开源社区的方式进行维护。更详细的故事可以看看Trino的[这篇博客](https://trino.io/blog/2022/08/02/leaving-facebook-meta-best-for-trino.html)。
 
 # 3. AWS Glue
-对于数据湖`Schema-on-read`的特性来说，如何维护这个"Schema"是一项关键的任务。向数据湖写数据的时候可以简单地将文件上传至S3，但经由Athena读取数据的时候必须指定数据的Schema，即向`Trino`的Metadata API提供对应数据的metadata。而[AWS Glue](https://aws.amazon.com/glue/)就承担了这一工作。
+对于数据湖`Schema-on-read`的特性来说，如何维护这个"Schema"是一项关键的任务。只有将数据的"Schema"与数据实际的储存方式解耦，才能使数据湖解决方案具备足够的灵活性和扩展能力。而[AWS Glue](https://aws.amazon.com/glue/)就承担了这一工作。
 
-AWS Glue有诸多功能，今天我们着重在其中两个最重要的部分：`Glue Data Catalog` 和 `Glue Crawler`。他们的关系如下图: `Glue Crawler`爬取数据湖中数据的Schema，并储存于`Glue Data Catalog`中。
+AWS Glue有诸多功能，今天我们着重在其中两个最重要的部分：`Glue Data Catalog` 和 `Glue Crawler`。他们的关系如下图: `Glue Crawler`爬取数据湖中数据的Schema，并将元数据储存于`Glue Data Catalog`中。
 ![glue-catalog-and-crawler](./glue-catalog-and-crawler.png)
 
 ## 3.1 Glue Data Catalog
 
-为了使用Athena查询数据，和普通的关系型数据库一样首先需要创建"Database"和"Table"，而"Table"本质就是对数据湖中数据规定的一系列Schema。最简单的创建方式是在Athena console中使用Trino SQL。假设我们有如下的账户数据(对于JSON格式的数据，Athena要求使用[ndjson](http://ndjson.org/)格式，每一行是一条完整的json)
+为了使用Athena查询数据，和普通的关系型数据库一样首先需要创建"Database"和"Table"，而"Table"本质就是对数据湖中数据规定的一系列Schema，数据的存储位置以及数据序列化/反序列化标准等元数据。最简单的创建"Table"方式是在Athena console中使用Trino SQL。假设我们有如下的账户数据(对于JSON格式的数据，Athena要求使用[ndjson](http://ndjson.org/)格式，每一行是一条完整的json)
 ```json
 {"account_number":1,"balance":39225,"firstname":"Amber","lastname":"Duke","age":32,"gender":"M","address":"880 Holmes Lane","employer":"Pyrami","email":"amberduke@pyrami.com","city":"Brogan","state":"IL"}
 {"account_number":6,"balance":5686,"firstname":"Hattie","lastname":"Bond","age":36,"gender":"M","address":"671 Bristol Street","employer":"Netagy","email":"hattiebond@netagy.com","city":"Dante","state":"TN"}
@@ -87,19 +87,18 @@ CREATE EXTERNAL TABLE `accounts`(
   `employer` string,
   `email` string,
   `city` string,
-  `state` string)
+  `state` string) -- 数据的结构
 ROW FORMAT SERDE 
   'org.openx.data.jsonserde.JsonSerDe' -- 指定SerDe
 LOCATION
   's3://athena-data/accounts' -- 指定S3地址
 ```
-这样，一张Glue Data Catalog的就创建完成了。注意与在`MySQL`中创建表不同的是，这里需要指定`ROW FORMAT`和S3`LOCATION`。其中`org.openx.data.jsonserde.JsonSerDe`代表使用内置的JSON序列化/反序列化去处理S3中的数据，如果源数据的格式不是JSON，而是诸如`csv`或`Parquet`之类的格式，则要指定对应的SerDe。
+这样，一张Glue Data Catalog的就创建完成了。注意与在`MySQL`中创建表不同的是，这里需要指定`ROW FORMAT`和S3`LOCATION`。其中`org.openx.data.jsonserde.JsonSerDe`代表使用内置的JSON序列化/反序列化去处理S3中的数据，如果源数据的格式不是JSON，而是诸如`csv`或`Parquet`之类的格式，则要指定对应的SerDe。有了这些元数据，任何一个数据的消费者或者生产者都可以在不关心实际S3存储的基础上，对数据进行操作，也就是完成了数据存储与数据访问的解耦。
 
 创建完成后，就可以使用Trino SQL在Athena中查询数据了:
 ```sql
 SELECT * FROM "accounts" limit 10;
 ```
-每次查询的结果都会保存为csv格式存放在指定的S3目录下。
 
 ## 3.2 Glue Crawler
 
@@ -198,7 +197,9 @@ TBLPROPERTIES (
 可以看到除了一些crawler的元信息外，Crawler自动为我们添加了PARTITIONED BY`字段。并且将来有更多数据加入数据湖时，定期使用Crawler爬取数据可以自动更新表结构和Partition。需要注意的是如果有新的partition文件夹产生了，那么这些新partition中的数据在被Crawler爬取或手动增加partition之前，是无法被查询到的。
 
 # 4. 总结
-这次我们从总体上了解了构成AWS数据湖的几个最基本的服务：AWS S3, Athena和Glue，并介绍了他们各自在整个数据湖架构中的位置和作用。在下篇文章中，我们详细了解如何搭建这一套解决方案，并通过解决一些实际的问题:
+这次我们从总体上了解了构成AWS数据湖的几个最基本的服务：AWS S3, Glue和Athena，并介绍了他们各自在整个数据湖架构中的位置和作用。实际上如果把一个数据库的组成分解为数据存储，数据Schema以及查询解析引擎的话，那么这三个服务就分别实现了这些要求，也可以将这个stack看做一套被拆分开的数据库实现。
+
+在下篇文章中，我们详细了解如何搭建这一套解决方案，并通过解决一些实际的问题:
 - 如果每一条数据都是一个ndjson文件，那么就算使用了partition，一个partition内的文件数过多是否会影响查询性能？
 - 通过Athena查询时使用了不在partition上的`where`条件，有没有办法有效地降低文件扫描的数量和耗时？
 
