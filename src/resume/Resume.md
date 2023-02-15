@@ -8,8 +8,7 @@ lang: "zh"
 
 # 个人信息
  - **陈逸斐**/男
- - 研究生/2017年毕业/华东理工大学 计算机科学与技术
- - 本科/2014年毕业/华东理工大学 环境工程
+ - 硕士/2017年毕业/华东理工大学 计算机科学与技术
  - 博客：[https://chennima.github.io/blog](https://chennima.github.io/blog)
  - Github：[https://github.com/ChenNima](https://github.com/ChenNima)
  - LinkedIn：[https://www.linkedin.com/in/yifei-chen-990199110/](https://www.linkedin.com/in/yifei-chen-990199110/)
@@ -18,15 +17,19 @@ lang: "zh"
 # 工作经历
 
 ## SAP Labs China （ 2016年10月 ~  ）
-Web应用(前后端)开发，DevOps以及数据工程师。
-### **Senior Full Stack Developer**/<small>SAP Concur</small> （ 2021年1月 ~  ）
-参与开发SAP Concur eFapiao，一个基于`NodeJS`和微信小程序的发票自动识别，校验系统
+架构师，Web应用(前后端)开发，DevOps以及数据工程师。
+### **Architect**/<small>SAP Concur</small> （ 2021年1月 ~  ）
+设计并开发SAP Concur eFapiao，一个基于`NodeJS`和微信小程序的发票自动识别，校验解决方案
 
-- DevOps: 项目在AWS以及`Kubernetes`上的运维和部署
-- 后端开发: 基于`NodeJS`以及`NestJS`框架的后端Web服务。数据后端基于`DynamoDB`
+- DevOps:
+  - 项目在AWS以及`Kubernetes`上的运维和部署
+  - 服务注册与发现基于Concur定制化的`Istio`+`Envoy`服务网格
+- 后端开发:
+  - 基于`NodeJS`以及`NestJS`框架的后端Web服务
+  - 数据后端基于AWS的分布式数据库`DynamoDB`
 - 数据工程:
-  - 采集服务运行中产生的指标数据，并储存至`AWS S3`
-  - 使用`AWS Glue Job`将采集到的数据经过ETL整合为`Parquet`格式，并进行各种聚合运算。
+  - 采集服务运行中产生的指标数据，通过`AWS S3`以及`AWS Kinesis`流式传输与数据管道对接
+  - 使用`AWS Glue Job`实现基于`Spark`的批处理/流处理ETL任务
   - 使用`Grafana`以及`AWS Athena`查询并可视化采集到的数据
 - 机器学习:
   - 部署基于`PaddleOCR`的OCR模型，辅助标注发票图片识别不准确的字段
