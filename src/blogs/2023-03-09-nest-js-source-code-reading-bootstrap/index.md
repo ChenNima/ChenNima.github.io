@@ -185,6 +185,146 @@ public async scan(module: Type<any>) {
 
 在注册其余模块前，Nest需要先初始化核心模块。其主要包括`ExternalContextCreator`, `ModulesContainer`, `HttpAdapterHost`等Providers。由于这次的重点是依赖注入的实现，对于核心模块的功能先不赘述。
 
+### 2.1.1 模块的递归扫描
 **scanForModules**
 
+从[scanForModules](https://github.com/nestjs/nest/blob/v9.3.9/packages/core/scanner.ts#L85)开始，终于进入了模块依赖树的扫描阶段。下面仅列出关键代码，并省略了dynamic module的处理。
+
+```js
+public async scanForModules(...): Promise<Module[]> {
+    // 实例化module并将module加入全局容器NestContainer中
+    const moduleInstance = await this.insertModule(moduleDefinition, scope);
+    ...
+    // ctxRegistry用于记录已扫描的module
+    ctxRegistry.push(moduleDefinition);
+    ...
+    // 从reflect metadata中取出当前module依赖的所有module
+    const modules = this.reflectMetadata(
+          MODULE_METADATA.IMPORTS,
+          moduleDefinition as Type<any>,
+        )
+
+    let registeredModuleRefs = [];
+    // 遍历当前模块所依赖的所有模块
+    for (const [index, innerModule] of modules.entries()) {
+      ...
+      if (ctxRegistry.includes(innerModule)) {
+        // 遇到已经扫描过的module，则跳过
+        continue;
+      }
+      // 递归调用自身
+      const moduleRefs = await this.scanForModules(
+        innerModule,
+        [].concat(scope, moduleDefinition),
+        ctxRegistry,
+      );
+      registeredModuleRefs = registeredModuleRefs.concat(moduleRefs);
+    }
+    if (!moduleInstance) {
+      return registeredModuleRefs;
+    }
+    return [moduleInstance].concat(registeredModuleRefs);
+  }
+```
+
+该方法一开始调用了[insertModule](https://github.com/nestjs/nest/blob/v9.3.9/packages/core/scanner.ts#L144)，该方法比较简单，实际上进一步调用了[NestContainer.addModule](https://github.com/nestjs/nest/blob/v9.3.9/packages/core/injector/container.ts#L67)实例化module并将module加入全局容器NestContainer中。其中比较关键的代码是:
+```js
+...
+const { type, dynamicMetadata, token } = await this.moduleCompiler.compile(
+      metatype,
+    );
+...
+const moduleRef = new Module(type, this);
+...
+this.modules.set(token, moduleRef);
+...
+```
+这段代码也相对好理解，首先使用[ModuleCompiler.compile](https://github.com/nestjs/nest/blob/v9.3.9/packages/core/injector/compiler.ts#L17)将Module class转换为`type`(Module class本身), `dynamicMetadata`(dynamic module的imports, providers等)以及`token`(用来储存或获取一个Module实例的key)。随后为该模块创建一个仅包含class信息的`Module`容器，并使用`token`注册在NestContainer中。
+
+在获取到当前Module的容器后，使用常量`MODULE_METADATA.IMPORTS`从reflectMetadata中获取当前模块所依赖的所有模块。也就是我们通过装饰器`@Module`定义模块时
+```js
+@Module({
+  imports: [...],
+  providers: [...],
+  exports: [...],
+})
+export class CatModule {}
+```
+装饰器向模块Class写入的信息。最后对于这些当前模块的依赖模块逐一进行递归调用[scanForModules](https://github.com/nestjs/nest/blob/v9.3.9/packages/core/scanner.ts#L85)，就能将从根模块出发所能搜索到的所有模块都创建好对应容器，并注入到注册在NestContainer中了。
+
+### 2.1.2 模块依赖扫描
+
+[scanModulesForDependencies](https://github.com/nestjs/nest/blob/v9.3.9/packages/core/scanner.ts#L163)的方法体很简单:
+```js
+public async scanModulesForDependencies(
+    modules: Map<string, Module> = this.container.getModules(),
+  ) {
+    for (const [token, { metatype }] of modules) {
+      await this.reflectImports(metatype, token, metatype.name);
+      this.reflectProviders(metatype, token);
+      this.reflectControllers(metatype, token);
+      this.reflectExports(metatype, token);
+    }
+  }
+```
+遍历上一步扫描出来的所有Module并反射出每个Module的`imports`, `providers`, `controllers`以及`exports`。
+
+我们先来看[reflectImports](https://github.com/nestjs/nest/blob/v9.3.9/packages/core/scanner.ts#L174)。这个方法再次利用反射获取了一个模块的所有依赖模块，并对这些依赖模块，也就是`imports`里声明的模块调用了[NestContainer.addImport](https://github.com/nestjs/nest/blob/v9.3.9/packages/core/injector/container.ts#L148)
+```js
+public async addImport(
+    relatedModule: Type<any> | DynamicModule,
+    token: string,
+  ) {
+    if (!this.modules.has(token)) {
+      return;
+    }
+    const moduleRef = this.modules.get(token);
+    const { token: relatedModuleToken } = await this.moduleCompiler.compile(
+      relatedModule,
+    );
+    // 当前处理的模块
+    const related = this.modules.get(relatedModuleToken);
+    moduleRef.addRelatedModule(related);
+  }
+```
+这段代码中`relatedModule`代表被依赖的模块，而`related`则代表当前正在处理的模块。通过调用[Module.addRelatedModule](https://github.com/nestjs/nest/blob/v9.3.9/packages/core/injector/module.ts#L543)将被依赖模块的实力加入到当前模块的`_imports`集合中。这样，当所有模块都处理完成后，每个模块以及其`_imports`集合就形成了一个模块的依赖树。
+
+对于剩余的三个方法，处理手法均大同小异。与上述`addImport`不同的是，所有的Module在上一轮的扫描中均已创建了对应的容器。而Provider们则是第一次被处理。所以在最终调用[Module.addProvider](https://github.com/nestjs/nest/blob/v9.3.9/packages/core/injector/module.ts#L274)时，需要先将Provider的容器`InstanceWrapper`创建出来。
+```js
+...
+this._providers.set(
+      provider,
+      new InstanceWrapper({
+        token: provider,
+        name: (provider as Type<Injectable>).name,
+        metatype: provider as Type<Injectable>,
+        instance: null,
+        isResolved: false,
+        scope: getClassScope(provider),
+        durable: isDurable(provider),
+        host: this,
+      }),
+    );
+...
+```
+此时`InstanceWrapper`相当于一个空容器，仅记录了一些元数据，并没有任何实例。
+
+另一个不点是，对于`Controller`，我们可以使用诸如`@UsePipes`, `@UseInterceptors`, `@Post`等装饰器注入一些`enhancer`或者定义一些路由规则。对于这一部分的处理存在于[reflectDynamicMetadata](https://github.com/nestjs/nest/blob/v9.3.9/packages/core/scanner.ts#L219)
+```js
+public reflectDynamicMetadata(cls: Type<Injectable>, token: string) {
+    if (!cls || !cls.prototype) {
+      return;
+    }
+    this.reflectInjectables(cls, token, GUARDS_METADATA);
+    this.reflectInjectables(cls, token, INTERCEPTORS_METADATA);
+    this.reflectInjectables(cls, token, EXCEPTION_FILTERS_METADATA);
+    this.reflectInjectables(cls, token, PIPES_METADATA);
+    this.reflectParamInjectables(cls, token, ROUTE_ARGS_METADATA);
+  }
+```
+通过对应的常量反射出这些额外的注解，并注册到`NestContainer`中等待被注入。
+
+至此，整个模型依赖树的扫描就完成了。
+
+## 2.2 可注入对象的实例化与依赖注入
 
