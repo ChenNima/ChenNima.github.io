@@ -1,5 +1,5 @@
 ---
-path: "/nest-js-source-code-reading-bootstrap"
+path: "/nest-js-source-code-reading-dependency-injection"
 date: 2023-03-09T11:12:03+08:00
 title: "NestJS源码精读(1): 启动与依赖注入"
 type: "blog"
@@ -78,12 +78,12 @@ export class CatsModule {}
 
 可能有同学会有疑问，为什么实例化的对象需要使用一层封装而不是直接储存该对象呢？主要出自于几个方面考虑:
 
-1. 存放元数据: 其中最简单直接的原因是除了实例外，`InstanceWrapper`容器还存放了诸如`metaType`，即可注入对象的Class，用以创建对象，以及`subtype`，用以标记可注入对象是否为一个`guard`, `interceptor`, `pipe`或者`filter`这样的元数据。
-2. 循环依赖问题: 为了解决循环依赖问题，整个NestJS将可注入对象的实例化分为了两步。第一步先通过原型链创建出该对象的实例，但不注入任何依赖，所以这一步我们可以获得所有服务的实例引用而不需要担心循环依赖的问题。第二步再向各个半成品实例注入依赖，此时服务的所有依赖不管有没有循环依赖的问题，均已有实例引用可以直接注入。而`InstanceWrapper`就是一个存放半成品实例和最终实例的容器。
-3. Scope隔离问题: NestJS支持在不[不同Scope创建可注入对象](https://docs.nestjs.com/fundamentals/injection-scopes)。其中Scope又分为三种：
-- Default: 全局的单例，生命周期和整个nestApp一样长
-- Request: 每个request生成一个单例，该单例在request结束后被销毁
-- Transient: 每次注入时产生一个新的实例
+- 存放元数据: 其中最简单直接的原因是除了实例外，`InstanceWrapper`容器还存放了诸如`metaType`，即可注入对象的Class，用以创建对象，以及`subtype`，用以标记可注入对象是否为一个`guard`, `interceptor`, `pipe`或者`filter`这样的元数据。
+- 循环依赖问题: 为了解决循环依赖问题，整个NestJS将可注入对象的实例化分为了两步。第一步先通过原型链创建出该对象的实例，但不注入任何依赖，所以这一步我们可以获得所有服务的实例引用而不需要担心循环依赖的问题。第二步再向各个半成品实例注入依赖，此时服务的所有依赖不管有没有循环依赖的问题，均已有实例引用可以直接注入。而`InstanceWrapper`就是一个存放半成品实例和最终实例的容器。
+- Scope隔离问题: NestJS支持在[不同Scope创建可注入对象](https://docs.nestjs.com/fundamentals/injection-scopes)。其中Scope又分为三种：
+  - Default: 全局的单例，生命周期和整个nestApp一样长
+  - Request: 每个request生成一个单例，该单例在request结束后被销毁
+  - Transient: 每次注入时产生一个新的实例
 
 所以当依赖注入的时候，需要根据当前Scope，注入一个对应的实例。`InstanceWrapper`中对象的实例实际储存在一个`WeakMap`中，将实例与他对应的`ContextId`做一一映射。
 
@@ -328,12 +328,14 @@ public reflectDynamicMetadata(cls: Type<Injectable>, token: string) {
 
 ## 2.2 可注入对象的实例化与依赖注入
 
-扫描完整个模块的依赖树后，就可以把模块中定义的各种可注入对象实例化了。平时我们实例化对象时使用`new`关键字即可，但是当我们实现一个依赖注入工具时，由于这些对象之间又有依赖关系，同时也会存在循环依赖的问题，所以很可能没办法找到一个合理的顺序，将这些对象一个一个调用`new`关键字实例化出来。为了解决这个问题，NestJS将对象的实例化拆成的两个部分，第一步使用`Object.create`先先从原型链创建出每个对象的实例，此时由于没有调用对象的构造函数，不需要担心对象之间的依赖关系。当获得所有对象的实例后，就可以再为这些对象寻找到它们的依赖并进行依赖注入了。整个依赖注入的实例化和注入过程入口在[InstanceLoader.createInstancesOfDependencies](https://github.com/nestjs/nest/blob/v9.3.9/packages/core/injector/instance-loader.ts#L25)方法中。
+扫描完整个模块的依赖树后，就可以把模块中定义的各种可注入对象实例化了。平时我们实例化对象时使用`new`关键字即可，但是当我们实现一个依赖注入工具时，由于这些对象之间又有依赖关系，同时也会存在循环依赖的问题，所以很可能没办法找到一个合理的顺序，将这些对象一个一个调用`new`关键字实例化出来。为了解决这个问题，NestJS将对象的实例化拆成的两个部分，第一步使用`Object.create`先从原型链创建出每个对象的实例，此时由于没有调用对象的构造函数，不需要担心对象之间的依赖关系。当获得所有对象的实例后，就可以再为这些对象寻找到它们的依赖并进行依赖注入了。整个依赖注入的实例化和注入过程入口在[InstanceLoader.createInstancesOfDependencies](https://github.com/nestjs/nest/blob/v9.3.9/packages/core/injector/instance-loader.ts#L25)方法中。
 ```js
 public async createInstancesOfDependencies(
     modules: Map<string, Module> = this.container.getModules(),
   ) {
+    // 使用原型链创建空实例
     this.createPrototypes(modules);
+    // 装填实例
     await this.createInstances(modules);
     ...
   }
@@ -353,9 +355,12 @@ public async createInstancesOfDependencies(
     if (!collection) {
       return;
     }
+    // 获取InstanceWrapper
     const target = collection.get(token);
+    // 使用原型链创建空实例
     const instance = target.createPrototype(contextId);
     if (instance) {
+      // 将新的InstanceWrapper写回
       const wrapper = new InstanceWrapper({
         ...target,
         instance,
@@ -382,41 +387,21 @@ public async loadInstance<T>(
     contextId = STATIC_CONTEXT,
     inquirer?: InstanceWrapper,
   ) {
-    const inquirerId = this.getInquirerId(inquirer);
-    const instanceHost = wrapper.getInstanceByContextId(
-      this.getContextId(contextId, wrapper),
-      inquirerId,
-    );
     ...
     const token = wrapper.token || wrapper.name;
 
     const { inject } = wrapper;
     const targetWrapper = collection.get(token);
     ...
-    // 定义callback，该hook在解析出对象的所有依赖后被调用
+    // 定义callback，该hook在解析出对象的所有依赖后被调用，用以执行
     const callback = async (instances: unknown[]) => {
-      const properties = await this.resolveProperties(
-        wrapper,
-        moduleRef,
-        inject as InjectionToken[],
-        contextId,
-        wrapper,
-        inquirer,
-      );
-      const instance = await this.instantiateClass(
-        instances,
-        wrapper,
-        targetWrapper,
-        contextId,
-        inquirer,
-      );
-      this.applyProperties(instance, properties);
-      done();
+      ...
     };
+    // 从对象构造函数中提取依赖
     await this.resolveConstructorParams<T>(
       wrapper,
       moduleRef,
-      inject as InjectionToken[],
+      inject,
       callback,
       contextId,
       wrapper,
@@ -425,3 +410,118 @@ public async loadInstance<T>(
   }
 ```
 
+在这段代码中，Nest先通过分析构造函数，提取当前对象的依赖，即分析出需要注入哪些依赖给当前对象。在提取完成后，利用一个callback来执行真正的依赖注入。这个callback我们一会再说，先来看看Nest是如何提取对象依赖的。
+
+提取依赖的过程位于[Injector.resolveConstructorParams](https://github.com/nestjs/nest/blob/v9.3.9/packages/core/injector/injector.ts#L251)。这里又分为了两步：先获取对象的依赖列表，然后在查询出这些依赖对应的实例对象。
+
+**获取依赖列表**
+
+代码位于[Injector.getClassDependencies](https://github.com/nestjs/nest/blob/v9.3.9/packages/core/injector/injector.ts#L317)。该方法提取了对象在构造函数中声明的依赖以及可选的依赖。其中构造函数的依赖通过[Injector.reflectConstructorParams](https://github.com/nestjs/nest/blob/v9.3.9/packages/core/injector/injector.ts#L358)反射出来。该方法主要从对象的`reflectMetadata`中获取了键为`design:paramtypes`以及`self:paramtypes`的数据。
+
+其中`design:paramtypes`是Typescript原生支持的reflectMetadata。当你的代码以下面的形式声明依赖时
+```js
+@Injectable()
+class AppService {
+  constructor(private readonly CatService) {}
+}
+```
+打开tsconfig配置中`emitDecoratorMetadata`这个选项后，代码经过`tsc`转移成js时，就会被转换为如下的形式
+```js
+AppService = __decorate([
+    (0, common_1.Injectable)(),
+    __metadata("design:paramtypes", [CatService])
+], AppService);
+```
+此时NestJS就可以从这个`design:paramtypes`来提取你声明依赖的Class了。详细的说明可以参考[这篇文档](https://www.typescriptlang.org/tsconfig)
+
+而`self:paramtypes`这项reflectMetadata则是NestJS自己声明的，当你的依赖是通过`@Inject(token?)`形式注入时，依赖的token就会被写入到当前Class的`self:paramtypes`中。
+
+**查询依赖实例**
+
+获取到当前对象声明依赖的Class或者token后，就需要获取对应的实例了。具体的过程位于[injector.lookupComponent](https://github.com/nestjs/nest/blob/v9.3.9/packages/core/injector/injector.ts#L494)。可注入的对象来源分为两种，第一个是与当前对象同Module的`providers`，或者是被当前模块通过`imports`引入模块的`exports`当中。对于第一种依赖比较简单，直接在当前的Module内搜索即可。对于第二种依赖，由于可能是通过层层`import`引入的依赖，则需要在依赖树上递归地寻找。具体的递归寻找过程位于[injector.lookupComponentInImports](https://github.com/nestjs/nest/blob/v9.3.9/packages/core/injector/injector.ts#L555)。
+
+经过以上两步，[Injector.resolveConstructorParams](https://github.com/nestjs/nest/blob/v9.3.9/packages/core/injector/injector.ts#L251)方法就搜索到当前对象所声明依赖的所有实例了。此时调用callback来进行具体的依赖注入过程。
+
+```js
+const callback = async (instances: unknown[]) => {
+  // 获取属性依赖
+  const properties = await this.resolveProperties(
+    wrapper,
+    moduleRef,
+    inject as InjectionToken[],
+    contextId,
+    wrapper,
+    inquirer,
+  );
+  // 装填实例
+  const instance = await this.instantiateClass(
+    instances,
+    wrapper,
+    targetWrapper,
+    contextId,
+    inquirer,
+  );
+  // 装填属性
+  this.applyProperties(instance, properties);
+  wrapper.initTime = this.getNowTimestamp() - t0;
+  done();
+};
+```
+该回调的输入参数`instances`即上一步搜索到的依赖实例。最后的注入过程分为了三步：
+
+**寻找可被注入的属性(resolveProperties)**
+
+除了上述两种依赖注入的方式外，NestJS还支持属性注入[Property-based injection](https://docs.nestjs.com/providers#property-based-injection)。例如其官网上的例子：
+```js
+@Injectable()
+export class HttpService<T> {
+  @Inject('HTTP_OPTIONS')
+  private readonly httpClient: T;
+}
+```
+此时属性`httpClient`的依赖注入并不在构造函数上申明，而是单独调用了`@Inject(token?)`装饰器注入。此时这条注入信息被写入到了Class的reflectMetadata中的键`self:properties_metadata中。`resolveProperties`方法就是根据这个键去提取并寻找出当前对象的属性依赖。
+
+**创建实例(instantiateClass)**
+
+在获取了构造函数所声明的依赖的实例后，就可以将这些依赖注入到实例中了。实际上非常简单，直接调用`new`关键字就好了
+```js
+instanceHost.instance = new (metatype as Type<any>)(...instances)
+```
+那么在2.2.1节中从原型链上创建出来的对象还有什么用呢？答案是如果是循环依赖的情况，不能新建对象，而是应该保留2.2.1节中创建好对象的引用。因为在循环依赖的情况下，在当前对象依赖注入之前，当前对象可能已经作为依赖被注入给别的对象了。在这种情况下新建对象就需要换一个方式来保持实例的引用不变:
+```js
+instanceHost.instance = Object.assign(
+  instanceHost.instance,
+  new (metatype as Type<any>)(...instances),
+)
+```
+
+**将属性依赖赋予实例(applyProperties)**
+
+上一步中创建出的实例已经通过`new`关键字注入了构造函数声明的依赖，这一步也非常简单直接:
+```js
+iterate(properties)
+  .filter(item => !isNil(item.instance))
+  .forEach(item => (instance[item.key] = item.instance));
+```
+
+至此，整个依赖树的实例化以及依赖注入也完成了。而一些如`loadEnhancersPerContext`注入`enhancer`的过程这里就不再赘述了。
+
+# 3. 总结
+好了，我们这次以[NestFactoryStatic.create](https://github.com/nestjs/nest/blob/v9.3.9/packages/core/nest-factory.ts#LL69)为切入点，通过阅读源码学习了NestJS是如何实现依赖注入的。简单的说，总共分为这么几步
+
+- 从根模块出发，深度优先遍历模块的`imports`数组，构造一个模块的依赖树，同时为可注入对象创建容器
+- 遍历可注入对象，使用构造函数的原型在不使用`new`关键字的情况下创建实例(提前创建引用以解决循环依赖问题)
+- 对于每个可注入对象，通过分析`reflectMetadata`，获取其申明依赖的Class或者注入token
+- 获取当前对象依赖的实例
+- 使用构造函数创建出对象实例，并进一步装填对象
+
+相信在了解了整个过程后，你已经对基于`Typescript`的依赖注入原理以及思路有了比较全面的认识，也许你也可以试试写一个自己的小型依赖注入库。
+
+# 参考链接
+
+1. https://github.com/nestjs/nest
+2. https://github.com/spring-projects/spring-framework
+3. https://github.com/angular/angular
+4. https://monorepo.tools/
+5. https://docs.nestjs.com
+6. https://www.typescriptlang.org/tsconfig
