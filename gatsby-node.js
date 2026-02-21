@@ -14,7 +14,7 @@ const createMarkdownPages = (type, template) => async ({ actions, graphql, repor
   const { createPage } = actions
   const result = await graphql(`
     {
-      allMarkdownRemark(sort: {order: DESC, fields: [frontmatter___date]}, limit: 1000,
+      allMarkdownRemark(sort: {frontmatter: {date: DESC}}, limit: 1000,
         filter: {frontmatter: {type: {eq: "${type}"}}}) {
         edges {
           node {
@@ -34,7 +34,7 @@ const createMarkdownPages = (type, template) => async ({ actions, graphql, repor
     createPage({
       path: node.frontmatter.path,
       component: template,
-      context: {}, // additional data can be passed via context
+      context: {},
     })
   })
   const posts = result.data.allMarkdownRemark.edges

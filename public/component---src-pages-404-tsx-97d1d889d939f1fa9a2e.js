@@ -1,0 +1,2 @@
+"use strict";(self.webpackChunktee_break_blog=self.webpackChunktee_break_blog||[]).push([[453],{731:function(e,t,n){n.r(t),n.d(t,{Head:function(){return r}});var l=n(6540),u=n(4870),a=n(1042);t.default=()=>l.createElement(u.A,null,l.createElement("h1",null,"NOT FOUND"),l.createElement("p",null,"You just hit a route that doesn't exist... the sadness."));const r=()=>l.createElement(a.A,{title:"404: Not found"})}}]);
+//# sourceMappingURL=component---src-pages-404-tsx-97d1d889d939f1fa9a2e.js.map

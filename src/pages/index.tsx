@@ -9,7 +9,7 @@ const IndexPage = () => {
   const data: {allMarkdownRemark: MarkdownRemark<Blog>} = useStaticQuery(graphql`
     query IndexQuery {
       allMarkdownRemark(
-        sort: { order: DESC, fields: [frontmatter___date] }
+        sort: { frontmatter: { date: DESC } }
         limit: 10
         skip: 0
         filter: {frontmatter: {type: {eq: "blog"}}}
@@ -31,7 +31,6 @@ const IndexPage = () => {
   const { edges: posts } = data.allMarkdownRemark
   return (
     <>
-      <SEO title="首页" />
       <div className="d-flex justify-content-between">
         <h1 className="m-0">最新博客</h1>
         <Link to="/blog" className="align-self-end">更多&gt;&gt;</Link>
@@ -46,3 +45,5 @@ const IndexPage = () => {
 }
 
 export default withLayout(IndexPage)
+
+export const Head = () => <SEO title="首页" />

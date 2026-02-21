@@ -1,5 +1,5 @@
 import React from "react"
-import { graphql, Link } from "gatsby"
+import { graphql, Link, HeadProps } from "gatsby"
 import styled from "styled-components"
 import SEO from "../components/seo"
 import withLayout from "../util/HOC/withLayout"
@@ -24,7 +24,6 @@ function ResumeSIV({ data, className }: Props & StyledComponentProps) {
   }
   return (
     <>
-      <SEO title={post.frontmatter.title} description={post.excerpt}/>
       <div className={`blog-post-container ${className}`}>
         <div className="blog-post">
           <Link
@@ -54,6 +53,10 @@ export default styled(ResumeSIVwithLayout)`
     right: 1rem;
   }
 `
+
+export const Head = ({ data }: HeadProps<Props["data"]>) => (
+  <SEO title={data.markdownRemark.frontmatter.title} description={data.markdownRemark.excerpt} />
+)
 
 export const pageQuery = graphql`
   query ResumeByPath($path: String!) {

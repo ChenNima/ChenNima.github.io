@@ -1,5 +1,5 @@
 import React from "react"
-import { graphql } from "gatsby"
+import { graphql, HeadProps } from "gatsby"
 import styled, { keyframes } from "styled-components"
 import SEO from "../components/seo"
 import withLayout from "../util/HOC/withLayout"
@@ -16,7 +16,6 @@ function BlogSIV({ data, className }: Props & StyledComponentProps) {
   const { markdownRemark: post } = data // data.markdownRemark holds our post data
   return (
     <>
-      <SEO title={post.frontmatter.title} description={post.excerpt}/>
       <div className={`blog-post-container ${className}`}>
         <div className="blog-post">
           <h1 className="title">{post.frontmatter.title}</h1>
@@ -66,6 +65,10 @@ export default styled(BlogSIVwithLayout)`
     animation: ${expend} 1s cubic-bezier(0.4, 0, 0.2, 1);
   }
 `
+
+export const Head = ({ data }: HeadProps<Props["data"]>) => (
+  <SEO title={data.markdownRemark.frontmatter.title} description={data.markdownRemark.excerpt} />
+)
 
 export const pageQuery = graphql`
   query BlogPostByPath($path: String!) {

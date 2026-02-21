@@ -6,7 +6,6 @@
  */
 
 import React, { ReactNode } from "react"
-import PropTypes from "prop-types"
 import { useStaticQuery, graphql } from "gatsby"
 import { Container } from "react-bootstrap"
 import Header from "./header"
@@ -38,10 +37,6 @@ const Layout = ({ children, className }: Props) => {
       <Footer/>
     </>
   )
-}
-
-Layout.propTypes = {
-  children: PropTypes.node.isRequired,
 }
 
 export default styled(Layout)`

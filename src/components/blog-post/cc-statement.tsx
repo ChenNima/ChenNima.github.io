@@ -1,6 +1,6 @@
 import React from "react"
 import styled from "styled-components"
-import Img from "gatsby-image"
+import { GatsbyImage, getImage } from "gatsby-plugin-image"
 import { graphql, useStaticQuery } from "gatsby"
 
 const Image = () => {
@@ -8,15 +8,14 @@ const Image = () => {
     query {
       placeholderImage: file(relativePath: { eq: "CC-BY-NC-ND.png" }) {
         childImageSharp {
-          fixed(width: 88) {
-            ...GatsbyImageSharpFixed
-          }
+          gatsbyImageData(width: 88, layout: FIXED)
         }
       }
     }
   `)
 
-  return <Img fixed={data.placeholderImage.childImageSharp.fixed} />
+  const image = getImage(data.placeholderImage)
+  return image ? <GatsbyImage image={image} alt="CC BY-NC-ND" /> : null
 }
 
 const CcStatement = ({ className }: StyledComponentProps) => (

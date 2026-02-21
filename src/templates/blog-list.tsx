@@ -24,7 +24,6 @@ function BlogList({ data, pageContext }: Props) {
   const { edges: posts } = data.allMarkdownRemark
   return (
     <>
-      <SEO title="博客列表"/>
       <div className="blog-posts">
         {posts
           .filter((post)=> post.node.frontmatter.title.length > 0)
@@ -40,10 +39,12 @@ function BlogList({ data, pageContext }: Props) {
 
 export default withLayout(BlogList);
 
+export const Head = () => <SEO title="博客列表" />
+
 export const pageQuery = graphql`
   query ListQuery($skip: Int!, $limit: Int!) {
     allMarkdownRemark(
-      sort: { order: DESC, fields: [frontmatter___date] }
+      sort: { frontmatter: { date: DESC } }
       limit: $limit
       skip: $skip
       filter: {frontmatter: {type: {eq: "blog"}}}

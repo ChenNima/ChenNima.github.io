@@ -5,15 +5,20 @@ module.exports = {
     author: `@FelixChen`,
     siteUrl: `https://chennima.github.io/`,
   },
+  trailingSlash: "never",
   plugins: [
-    `gatsby-plugin-react-helmet`,
-    `gatsby-plugin-typescript`,
+    `gatsby-plugin-image`,
     `gatsby-plugin-sass`,
     `gatsby-plugin-sitemap`,
     {
-      resolve: `gatsby-plugin-google-analytics`,
+      resolve: `gatsby-plugin-google-gtag`,
       options: {
-        trackingId: "UA-147415879-1",
+        trackingIds: [
+          "G-CXB4PFJLS1",
+        ],
+        pluginConfig: {
+          head: true,
+        },
       },
     },
     {
@@ -47,7 +52,7 @@ module.exports = {
               maxWidth: 700,
             },
           },
-          'gatsby-remark-static-images',
+          'gatsby-remark-copy-linked-files',
           {
             resolve: "gatsby-remark-external-links",
             options: {
