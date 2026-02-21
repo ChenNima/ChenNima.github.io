@@ -33,7 +33,7 @@ function ResumeSIV({ data, className }: Props & StyledComponentProps) {
             {resumeLink.text}
           </Link>
           <Markdown
-            className="blog-post-content"
+            className="blog-post-content markdown-body"
             dangerouslySetInnerHTML={{ __html: post.html }}
           />
         </div>

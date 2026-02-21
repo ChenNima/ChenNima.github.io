@@ -1,0 +1,2 @@
+"use strict";(self.webpackChunktee_break_blog=self.webpackChunktee_break_blog||[]).push([[1453],{731:function(e,t,n){n.r(t),n.d(t,{Head:function(){return o}});var l=n(6540),u=n(4870),a=n(1042),r=n(9368);t.default=()=>{const e=(0,r.useT)();return(0,a.T)("notFound.headTitle"),l.createElement(u.A,null,l.createElement("h1",null,e("notFound.title")),l.createElement("p",null,e("notFound.message")))};const o=()=>l.createElement(a.A,{title:"404: 未找到"})}}]);
+//# sourceMappingURL=component---src-pages-404-tsx-7a15318900f1ad709be1.js.map

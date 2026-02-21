@@ -6,6 +6,7 @@ import SEO from "../components/seo"
 import withLayout from "../util/HOC/withLayout"
 import Markdown from "../components/blog-post/markdown"
 import CcStatement from "../components/blog-post/cc-statement"
+import { useShikiHighlight } from "../util/useShikiHighlight"
 
 interface Props {
   data: {
@@ -16,6 +17,8 @@ interface Props {
 function BlogSIV({ data, className }: Props & StyledComponentProps) {
   const { markdownRemark: post } = data // data.markdownRemark holds our post data
   const contentRef = useRef<HTMLDivElement>(null)
+
+  useShikiHighlight(contentRef)
 
   useEffect(() => {
     if (!contentRef.current) return
@@ -44,7 +47,7 @@ function BlogSIV({ data, className }: Props & StyledComponentProps) {
           <p className="date">{post.frontmatter.date}</p>
           <div ref={contentRef}>
             <Markdown
-              className="blog-post-content"
+              className="blog-post-content markdown-body"
               dangerouslySetInnerHTML={{ __html: post.html }}
             />
           </div>
