@@ -1,5 +1,7 @@
-import React from "react"
+import React, { useEffect } from "react"
 import { useStaticQuery, graphql } from "gatsby"
+import { useI18n } from "../i18n"
+import type { TranslationKey } from "../i18n"
 
 export interface Props {
   description?: string;
@@ -40,3 +42,11 @@ function SEO({ description, title }: Props) {
 }
 
 export default SEO
+
+export function useLocalizedTitle(titleKey: TranslationKey) {
+  const { locale, t } = useI18n();
+  useEffect(() => {
+    const siteTitle = t("site.title");
+    document.title = `${t(titleKey)} | ${siteTitle}`;
+  }, [locale, titleKey, t]);
+}

@@ -1,10 +1,13 @@
 import React from "react"
 import { Link, useStaticQuery, graphql } from "gatsby"
 import BlogItem from "../components/blog-list/blog-item";
-import SEO from "../components/seo"
+import SEO, { useLocalizedTitle } from "../components/seo"
 import withLayout from "../util/HOC/withLayout";
+import { useT } from "../i18n"
 
 const IndexPage = () => {
+  const t = useT();
+  useLocalizedTitle("home.headTitle");
 
   const data: {allMarkdownRemark: MarkdownRemark<Blog>} = useStaticQuery(graphql`
     query IndexQuery {
@@ -32,8 +35,8 @@ const IndexPage = () => {
   return (
     <>
       <div className="d-flex justify-content-between">
-        <h1 className="m-0">最新博客</h1>
-        <Link to="/blog" className="align-self-end">更多&gt;&gt;</Link>
+        <h1 className="m-0">{t("home.latestPosts")}</h1>
+        <Link to="/blog" className="align-self-end">{t("home.more")}</Link>
       </div>
       <hr />
       {posts

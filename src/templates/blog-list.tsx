@@ -1,6 +1,6 @@
 import React from "react"
 import { graphql, navigate } from "gatsby"
-import SEO from "../components/seo"
+import SEO, { useLocalizedTitle } from "../components/seo"
 import Pagination from "../components/pagination"
 import BlogItem from "../components/blog-list/blog-item"
 import withLayout from "../util/HOC/withLayout";
@@ -20,6 +20,7 @@ interface Props {
 }
 
 function BlogList({ data, pageContext }: Props) {
+  useLocalizedTitle("blogList.headTitle");
   const { currentPage, numPages } = pageContext;
   const { edges: posts } = data.allMarkdownRemark
   return (

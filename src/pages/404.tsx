@@ -1,15 +1,21 @@
 import React from "react"
 
 import Layout from "../components/layout"
-import SEO from "../components/seo"
+import SEO, { useLocalizedTitle } from "../components/seo"
+import { useT } from "../i18n"
 
-const NotFoundPage = () => (
-  <Layout>
-    <h1>NOT FOUND</h1>
-    <p>You just hit a route that doesn&#39;t exist... the sadness.</p>
-  </Layout>
-)
+const NotFoundPage = () => {
+  const t = useT();
+  useLocalizedTitle("notFound.headTitle");
+
+  return (
+    <Layout>
+      <h1>{t("notFound.title")}</h1>
+      <p>{t("notFound.message")}</p>
+    </Layout>
+  )
+}
 
 export default NotFoundPage
 
-export const Head = () => <SEO title="404: Not found" />
+export const Head = () => <SEO title="404: 未找到" />

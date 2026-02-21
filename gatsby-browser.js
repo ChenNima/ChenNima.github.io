@@ -11,3 +11,10 @@ require("prismjs/plugins/line-numbers/prism-line-numbers.css");
 require(`${__dirname}/src/css/bootstrap.min.css`)
 require(`${__dirname}/src/css/open-iconic-bootstrap.scss`)
 require(`${__dirname}/src/css/css-override.scss`)
+
+const React = require("react");
+const { I18nProvider } = require("./src/i18n");
+
+exports.wrapRootElement = ({ element }) => (
+  React.createElement(I18nProvider, null, element)
+);

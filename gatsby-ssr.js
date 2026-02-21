@@ -4,4 +4,13 @@
  * See: https://www.gatsbyjs.org/docs/ssr-apis/
  */
 
-// You can delete this file if you're not using it
+const React = require("react");
+const { I18nProvider } = require("./src/i18n");
+
+exports.wrapRootElement = ({ element }) => (
+  React.createElement(I18nProvider, null, element)
+);
+
+exports.onRenderBody = ({ setHtmlAttributes }) => {
+  setHtmlAttributes({ lang: "zh" });
+};
