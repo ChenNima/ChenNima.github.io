@@ -49,4 +49,10 @@ export default styled.article`
   .gatsby-resp-image-wrapper {
     margin: 2rem auto;
   }
+
+  img {
+    max-width: 100%;
+    height: auto;
+    cursor: zoom-in;
+  }
 `;

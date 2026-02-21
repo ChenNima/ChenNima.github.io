@@ -1,6 +1,7 @@
-import React from "react"
+import React, { useEffect, useRef } from "react"
 import { graphql, HeadProps } from "gatsby"
 import styled, { keyframes } from "styled-components"
+import mediumZoom from "medium-zoom"
 import SEO from "../components/seo"
 import withLayout from "../util/HOC/withLayout"
 import Markdown from "../components/blog-post/markdown"
@@ -14,6 +15,26 @@ interface Props {
 
 function BlogSIV({ data, className }: Props & StyledComponentProps) {
   const { markdownRemark: post } = data // data.markdownRemark holds our post data
+  const contentRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    if (!contentRef.current) return
+    // Remove <a> wrappers around images so clicks don't open new windows
+    contentRef.current.querySelectorAll("a > img, a .gatsby-resp-image-wrapper").forEach(el => {
+      const anchor = el.closest("a")
+      if (!anchor) return
+      const parent = anchor.parentNode
+      if (!parent) return
+      while (anchor.firstChild) parent.insertBefore(anchor.firstChild, anchor)
+      parent.removeChild(anchor)
+    })
+    const zoom = mediumZoom(contentRef.current.querySelectorAll("img"), {
+      margin: 24,
+      background: "rgba(0, 0, 0, 0.85)",
+    })
+    return () => zoom.detach()
+  }, [])
+
   return (
     <>
       <div className={`blog-post-container ${className}`}>
@@ -21,10 +42,12 @@ function BlogSIV({ data, className }: Props & StyledComponentProps) {
           <h1 className="title">{post.frontmatter.title}</h1>
           <hr className="divider"/>
           <p className="date">{post.frontmatter.date}</p>
-          <Markdown
-            className="blog-post-content"
-            dangerouslySetInnerHTML={{ __html: post.html }}
-          />
+          <div ref={contentRef}>
+            <Markdown
+              className="blog-post-content"
+              dangerouslySetInnerHTML={{ __html: post.html }}
+            />
+          </div>
         </div>
       </div>
       <CcStatement />
