@@ -85,7 +85,7 @@ data-styled.g9[id="sc-keyframes-iZfknO"]{content:"iZfknO,"}/*!sc*/
 <tr>
 <th>事件</th>
 <th>触发时机</th>
-<th>上下文</th>
+<th><code>additionalContext</code> 注入目标</th>
 </tr>
 </thead>
 <tbody>
@@ -97,7 +97,7 @@ data-styled.g9[id="sc-keyframes-iZfknO"]{content:"iZfknO,"}/*!sc*/
 <tr>
 <td><code>SubagentStart</code></td>
 <td>Sub-Agent 进程启动时（同步）</td>
-<td>Team Lead</td>
+<td><strong>Sub-Agent</strong></td>
 </tr>
 <tr>
 <td><code>TeammateIdle</code></td>
@@ -116,8 +116,12 @@ data-styled.g9[id="sc-keyframes-iZfknO"]{content:"iZfknO,"}/*!sc*/
 </tr>
 </tbody>
 </table>
-<p>注意一个关键事实：<strong>所有这些 Hook 都在 Team Lead 的上下文中触发</strong>，它们的输出（<code>additionalContext</code>）注入的是 Team Lead 的对话，而不是 Sub-Agent 的。Sub-Agent 的起始 prompt 完全由 Task 工具的 <code>prompt</code> 参数决定——没有任何 Hook 可以直接修改它。</p>
-<p>这意味着，如果你想让 Sub-Agent 自动获得某些上下文信息（比如会话 ID、工作流指令），你需要找到间接的注入方式。这正是本文的核心话题。</p>
+<p>注意一个关键区别——Hook 输出的注入目标并不相同：</p>
+<ul>
+<li>大多数 Hook（<code>PreToolUse:Task</code>、<code>TeammateIdle</code>、<code>TaskCompleted</code>、<code>SubagentStop</code>）的 <code>additionalContext</code> 注入到 <strong>Team Lead</strong> 的上下文</li>
+<li><strong><code>SubagentStart</code> 是例外</strong>——它的 <code>additionalContext</code> 直接注入到 <strong>Sub-Agent</strong> 的上下文</li>
+</ul>
+<p>这意味着 <code>SubagentStart</code> 是向 Sub-Agent 自动提供工作上下文（Session ID、工作流指令等）的理想 Hook——不需要 Team Lead 手写 boilerplate，也不需要 Sub-Agent 读取文件。</p>
 <hr>
 <h2>二、Chorus 是什么，解决什么问题</h2>
 <p>在深入插件实现之前，先简单介绍一下 Chorus。</p>
@@ -175,6 +179,41 @@ Human   PM Agent    PM Agent         Dev Agent   Admin    Admin
   </a>
     </span></p>
 <p>Chorus 中的 Task 可以声明依赖关系，形成有向无环图。PM Agent 在创建 Proposal 时通过 <code>dependsOnDraftUuids</code> 设置依赖。UI 使用 dagre 自动布局。Team Lead 可以据此决定 spawn 顺序——先处理没有依赖的 Task，被依赖的 Task 完成后，下游 Task 自动解除阻塞。</p>
+<p><strong>Elaboration — 结构化需求细化</strong></p>
+<p><span
+      class="gatsby-resp-image-wrapper"
+      style="position: relative; display: block; margin-left: auto; margin-right: auto; max-width: 700px; "
+    >
+      <a
+    class="gatsby-resp-image-link"
+    href="/static/56e4f4c00c30a7d138da103e4c7e645b/0ec65/elaboration.png"
+    style="display: block"
+    target="_blank"
+    rel="noopener"
+  >
+    <span
+    class="gatsby-resp-image-background-image"
+    style="padding-bottom: 63.42857142857142%; position: relative; bottom: 0; left: 0; background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAANCAYAAACpUE5eAAAACXBIWXMAAAsTAAALEwEAmpwYAAAB9klEQVR42o2TW2+bQBCF+f+/pW99SKVWFuxy38Umu46V9CUhgVitWu4YU2Cns9iK+uC4Qfq0SAyHc2YG4+uXm2/EXN1TayVsYsqPgLWSB77MfubyV57LoijE0B92yeOjY3ium93GMUScqXizho+wWUewu9vCNI6gr3melT6zLKsM27FTxhggMwtDtcCYeru/QBgEStzGqq1ydRwGNQzDPKPgU5KUhkvMLIo4BL6vCyE4wzRheBGsBSkENHUFRVFC0zaLw+fkuTJWnz9lvkPAoUTZ1MLTAkpMcB0KvutcxLUpxBj70LXQti10XbcIJk9JZbjYQ59xcD1fLQ5O8Rc45xfRz4S4hUNTwTRNMI5/UHAEHEplEMvMUBQIIUqfPsbR6Fhci14gxA9LFKzLAqq6hr7vT5G1Q8ehGeORLlKca1enlxaXV3t4EizLEvrDYRF8SVN0SCx06AGlVHmeB5rF3TtxNWHIYCslVCiIO/gmmGpBHAY6PE85DGDhyoT/dVjmv6HGyMNwPO/ha2VQQlLbccG2nRl7p3zcMcb4aRffIcD2CCFU29RqHEelNxvmEV7Tl9LYrHl2t9uBLpBSLFG22+vouu8PD6gznf+UCUV7+JHhHlLLvFlZVKAzjnEjjBsF/wGTRHEcR1WZR13XRP3xyFE33u/35l9LoIBnxjZoxgAAAABJRU5ErkJggg=='); background-size: cover; display: block;"
+  ></span>
+  <img
+        class="gatsby-resp-image-image"
+        alt="Elaboration"
+        title=""
+        src="/static/56e4f4c00c30a7d138da103e4c7e645b/8c557/elaboration.png"
+        srcset="/static/56e4f4c00c30a7d138da103e4c7e645b/4edbd/elaboration.png 175w,
+/static/56e4f4c00c30a7d138da103e4c7e645b/13ae7/elaboration.png 350w,
+/static/56e4f4c00c30a7d138da103e4c7e645b/8c557/elaboration.png 700w,
+/static/56e4f4c00c30a7d138da103e4c7e645b/e996b/elaboration.png 1050w,
+/static/56e4f4c00c30a7d138da103e4c7e645b/2cefc/elaboration.png 1400w,
+/static/56e4f4c00c30a7d138da103e4c7e645b/0ec65/elaboration.png 2009w"
+        sizes="(max-width: 700px) 100vw, 700px"
+        style="width:100%;height:100%;margin:0;vertical-align:middle;position:absolute;top:0;left:0;"
+        loading="lazy"
+        decoding="async"
+      />
+  </a>
+    </span></p>
+<p>在 Idea 进入 Proposal 之前，PM Agent 会发起 Elaboration（需求细化）：针对 Idea 提出结构化问题（功能范围、技术选型、优先级等），人类通过交互式选项回答。所有问答作为审计轨迹持久化到 Idea 上，确保设计决策有据可查——即使是口头讨论中达成的共识，也会被记录下来。</p>
 <p><strong>Proposal — AI 提出方案，人类审核</strong></p>
 <p><span
       class="gatsby-resp-image-wrapper"
@@ -209,7 +248,7 @@ Human   PM Agent    PM Agent         Dev Agent   Admin    Admin
       />
   </a>
     </span></p>
-<p>这是 AI-DLC 的核心理念"反转对话"的体现：PM Agent 分析 Idea 后，创建包含 PRD 文档草案和 Task 草案的 Proposal。Admin（人类）审核通过后，草案自动物化为真实的 Document 和 Task 实体。</p>
+<p>这是 AI-DLC 的核心理念"反转对话"的体现：PM Agent 基于 Elaboration 的结论，创建包含 PRD 文档草案和 Task 草案的 Proposal。Admin（人类）审核通过后，草案自动物化为真实的 Document 和 Task 实体。</p>
 <p><strong>Task 详情 — Session 追踪</strong></p>
 <p><span
       class="gatsby-resp-image-wrapper"
@@ -284,12 +323,11 @@ Human   PM Agent    PM Agent         Dev Agent   Admin    Admin
   name: "frontend-worker",
   prompt: """
     你的 Chorus task UUID: task-A-uuid
-    读取 .chorus/sessions/frontend-worker.json，按里面的 workflow 指令操作。
-    然后实现前端用户表单组件...
+    实现前端用户表单组件...
   """
 })
 </code></pre>
-<p>从 15 行 boilerplate 到 3 行。其余的全部由插件在 Hook 中自动处理。</p>
+<p>从 15 行 boilerplate 到 2 行。Team Lead 只需传递 task UUID——插件的 <code>SubagentStart</code> Hook 会自动将 session UUID 和完整的工作流指令直接注入到 Sub-Agent 的上下文中。不需要读取 session 文件，不需要复制工作流模板。</p>
 <hr>
 <h2>四、Claude Code 插件体系全览</h2>
 <p>Claude Code 的插件是一个目录，包含以下组件：</p>
@@ -543,11 +581,12 @@ disable-model-invocation: true      # 仅用户可触发（Claude 不会自动�
 <h4>每个 Hook 事件 Chorus 用它做什么</h4>
 <p>了解了事件、输出格式、同步/异步之后，来看 Chorus 插件如何具体使用每个 Hook。</p>
 <p><strong><code>SessionStart</code> — Checkin + 上下文注入</strong></p>
-<p>这是插件的"开机自检"。Chorus 在这里做三件事：</p>
+<p>这是插件的"开机自检"。注意 <code>SessionStart</code> 的 matcher 配置为 <code>startup|resume|compact</code>，这意味着它不仅在会话启动和恢复时触发，<strong>还会在上下文压缩（compact）后重新触发</strong>。当长对话触发自动压缩时，之前注入的 Chorus 上下文会随着旧消息被压缩而丢失——<code>compact</code> matcher 确保压缩后立即重新注入最新的 checkin 信息，Agent 不会因为上下文压缩而"失忆"。</p>
+<p>Chorus 在这里做三件事：</p>
 <ol>
 <li>调用 <code>chorus_checkin()</code> MCP 工具，获取当前 Agent 的身份（角色、名称、人格）、已分配的 Idea 和 Task、未读通知</li>
 <li>将完整的 checkin 结果通过 <code>additionalContext</code> 注入到 Claude 的上下文中——Agent 一启动就知道自己是谁、该做什么</li>
-<li>扫描 <code>.chorus/sessions/</code> 目录，列出已有的 Sub-Agent session 文件——这是为了处理 Claude Code 会话中断后恢复的情况：上次的 Sub-Agent session 文件可能还在，Team Lead 恢复后需要知道哪些 session 仍然存在</li>
+<li>扫描 <code>.chorus/sessions/</code> 目录，列出已有的 Sub-Agent session 元数据——这是为了处理 Claude Code 会话中断后恢复的情况：上次的 session 文件可能还在，Team Lead 恢复后需要知道哪些 session 仍然存在</li>
 </ol>
 <pre><code class="language-bash"># on-session-start.sh 核心逻辑
 CHECKIN_RESULT=$("$API" mcp-tool "chorus_checkin" '{}')
@@ -595,13 +634,13 @@ CONTEXT="[Chorus Plugin Active]
 <tr>
 <td><code>Task</code></td>
 <td><a href="https://github.com/Chorus-AIDLC/Chorus/blob/main/public/chorus-plugin/bin/on-pre-spawn-agent.sh" target="_blank" rel="nofollow noopener noreferrer"><code>on-pre-spawn-agent.sh</code></a></td>
-<td>捕获 Sub-Agent 的 name/type 写入 pending 文件；通过 <code>additionalContext</code> 提醒 Team Lead 在 prompt 中包含 task UUID</td>
+<td>捕获 Sub-Agent 的 name/type 写入 pending 文件，供 SubagentStart 认领</td>
 </tr>
 </tbody>
 </table>
 <p><code>EnterPlanMode</code> 和 <code>ExitPlanMode</code> 展示了一个有趣的用法：<strong>用 Hook 引导 Agent 遵循特定的工作流程</strong>。当 Agent 进入 Plan Mode 时，Chorus 自动注入"先创建 Proposal 再编码"的指导；退出 Plan Mode 时，检查是否已有 Proposal。这不是强制阻断（<code>permissionDecision</code> 仍然是 <code>allow</code>），而是通过 <code>additionalContext</code> 做软性引导。</p>
-<p><strong><code>SubagentStart</code> — Session 自动创建 + PE 注入</strong>（核心）</p>
-<p>这是 Chorus 插件最核心的 Hook，详见第五章。简要概括：认领 pending 文件 → 创建/复用 Session → 写 session file（含 workflow PE）→ 存储状态映射。</p>
+<p><strong><code>SubagentStart</code> — Session 自动创建 + 直接上下文注入</strong>（核心）</p>
+<p>这是 Chorus 插件最核心的 Hook，详见第五章。简要概括：认领 pending 文件 → 创建/复用 Session → 通过 <code>additionalContext</code> 将 session UUID + 工作流指令直接注入 Sub-Agent 上下文 → 存储状态映射。Session 文件仅保存最小元数据供其他 Hook 使用。</p>
 <p><strong><code>SubagentStop</code> — 自动清理 + 任务发现</strong></p>
 <p>异步执行，做四件事：(1) 批量 checkout 所有未关闭的 task checkin，(2) 关闭 Session，(3) 清理本地文件和状态，(4) 查询项目中新解除阻塞的 Task 并通过 <code>additionalContext</code> 通知 Team Lead——这一步非常有价值，它实现了<strong>自动任务调度发现</strong>：当一个前置 Task 完成后，下游 Task 自动解除阻塞，Team Lead 立即得到通知可以分配新工作。</p>
 <p><strong><code>TeammateIdle</code> — 自动心跳</strong></p>
@@ -618,17 +657,17 @@ CONTEXT="[Chorus Plugin Active]
   │
   ├─ [PreToolUse:Task] on-pre-spawn-agent.sh
   │    写入 .chorus/pending/&#x3C;name> 文件（捕获 agent name）
-  │    向 Team Lead 注入提醒："在 prompt 里包含 task UUID"
   │
   ├─ [SubagentStart] on-subagent-start.sh    ← 核心
   │    认领 pending 文件（原子 mv，处理并发）
   │    创建/复用/重开 Chorus Session（MCP 调用）
-  │    写入 .chorus/sessions/&#x3C;name>.json（含 workflow PE）
+  │    通过 additionalContext 将 session UUID + 工作流注入 Sub-Agent
+  │    写入最小 session 文件（元数据供其他 Hook 使用）
   │    存储 state 映射（agent_id ↔ session_uuid）
   │
   ├─ Sub-Agent 开始执行
-  │    读取 .chorus/sessions/&#x3C;name>.json → 获得 sessionUuid + 工作流指令
-  │    按 workflow 字段自主执行 checkin → in_progress → report → checkout → submit
+  │    Session UUID + 工作流已在上下文中（自动注入）
+  │    自主执行 checkin → in_progress → report → checkout → submit
   │
   ├─ [TeammateIdle] on-teammate-idle.sh（异步）
   │    发送 session heartbeat，保持 session 活跃
@@ -647,7 +686,7 @@ CONTEXT="[Chorus Plugin Active]
 <pre><code>.chorus/                              # 插件运行时状态（gitignored）
 ├── state.json                        # 全局状态 KV 存储
 ├── state.json.lock                   # flock 排他锁文件
-├── sessions/                         # Sub-Agent session 文件（含 workflow PE）
+├── sessions/                         # Sub-Agent session 元数据（供 Hook 状态查询）
 │   ├── frontend-worker.json
 │   ├── backend-worker.json
 │   └── test-runner.json
@@ -706,12 +745,13 @@ state_set() {
                                         → 没有更多 pending 文件 → 跳过（内部 agent，不创建 session）
 </code></pre>
 <p><code>mv</code> 在同一文件系统上是原子操作——只有一个进程能成功移动同一个文件。这比 flock 更轻量，适合"谁先到谁拿"的场景。</p>
-<h4><code>sessions/</code> — Sub-Agent 的信息入口</h4>
-<p>这是对 Sub-Agent 唯一可见的部分。每个 session file 既是数据（sessionUuid），也是指令（workflow PE）。文件名就是 agent name——Sub-Agent 只需 <code>Read .chorus/sessions/&#x3C;my-name>.json</code> 就能获得一切。</p>
+<h4><code>sessions/</code> — 跨 Hook 的状态查询入口</h4>
+<p>Session 文件现在只包含最小元数据（sessionUuid、agentId、agentName）。工作流指令通过 <code>SubagentStart</code> 的 <code>additionalContext</code> 直接注入 Sub-Agent 上下文——Sub-Agent 不再需要读取这些文件。文件仍有作用：其他 Hook（<code>TeammateIdle</code>、<code>SubagentStop</code>）用它来查找 session 信息以执行心跳和清理。</p>
 <h4>生命周期：创建到清理</h4>
 <pre><code>SessionStart  → mkdir -p .chorus/（如果不存在）
 PreToolUse    → 写 .chorus/pending/&#x3C;name>
-SubagentStart → mv pending → claimed，写 sessions/&#x3C;name>.json，更新 state.json
+SubagentStart → mv pending → claimed，写 sessions/&#x3C;name>.json（仅元数据），
+                通过 additionalContext 注入工作流 → Sub-Agent，更新 state.json
 TeammateIdle  → 读 state.json（查 session_uuid），无写入
 TaskCompleted → 读 state.json（查 session_uuid），无写入
 SubagentStop  → 删 sessions/&#x3C;name>.json，删 claimed/&#x3C;agent_id>，清 state.json 条目
@@ -719,43 +759,48 @@ SessionEnd    → 如果 sessions/ 为空且 state.json 为空 → rm -rf .choru
 </code></pre>
 <p>整个目录的生命周期和 Claude Code session 一致——开始时创建，结束时清理，不留痕迹。</p>
 <h3>5.3 核心难题：Sub-Agent 的上下文注入</h3>
-<p>前面提到，所有 Hook 的输出都只注入到 Team Lead 的上下文中。那么，如何让 Sub-Agent 也能获得必要的信息？</p>
-<p>Chorus 插件的答案是：<strong>利用共享文件系统作为信息传递通道</strong>。</p>
-<p>Sub-Agent 虽然和 Team Lead 不共享上下文窗口，但它们共享同一个文件系统。而 Team Lead 的 spawn prompt 里一定会告诉 Sub-Agent 去读某个文件——这个文件就成了上下文注入的天然入口。</p>
-<h4>实现：Session file 内嵌 workflow PE</h4>
-<p><a href="https://github.com/Chorus-AIDLC/Chorus/blob/main/public/chorus-plugin/bin/on-subagent-start.sh" target="_blank" rel="nofollow noopener noreferrer"><code>SubagentStart</code> Hook</a> 在写 session file 时，除了 sessionUuid 等数据字段外，额外写入一个 <code>workflow</code> 数组——包含完整的 5 步工作流指令，且每个 MCP 调用示例中的 sessionUuid 都是<strong>真实值</strong>（Bash heredoc 在写文件时展开变量）：</p>
-<pre><code class="language-bash"># on-subagent-start.sh 核心片段
-cat > "${SESSIONS_DIR}/${SESSION_NAME}.json" &#x3C;&#x3C;SESSIONEOF
-{
-  "sessionUuid": "${SESSION_UUID}",
-  "agentName": "${SESSION_NAME}",
-  "workflow": [
-    "=== Chorus Workflow — FOLLOW THESE STEPS ===",
-    "Your Chorus session UUID is: ${SESSION_UUID}",
-    "",
-    "1. Check in: chorus_session_checkin_task({ sessionUuid: \"${SESSION_UUID}\", taskUuid: \"&#x3C;TASK_UUID>\" })",
-    "2. Start:    chorus_update_task({ taskUuid: \"&#x3C;TASK_UUID>\", status: \"in_progress\", sessionUuid: \"${SESSION_UUID}\" })",
-    "3. Report:   chorus_report_work({ taskUuid: \"&#x3C;TASK_UUID>\", report: \"...\", sessionUuid: \"${SESSION_UUID}\" })",
-    "4. Checkout:  chorus_session_checkout_task({ sessionUuid: \"${SESSION_UUID}\", taskUuid: \"&#x3C;TASK_UUID>\" })",
-    "5. Submit:   chorus_submit_for_verify({ taskUuid: \"&#x3C;TASK_UUID>\", summary: \"...\" })",
-    "",
-    "Replace &#x3C;TASK_UUID> with the actual Chorus task UUID provided in your prompt."
-  ]
-}
-SESSIONEOF
+<p>关键问题是：如何让每个 Sub-Agent 自动获得它的 session UUID 和工作流指令，而不需要 Team Lead 手写 boilerplate？</p>
+<p>答案在于 <code>SubagentStart</code> Hook 的一个关键特性：<strong>它的 <code>additionalContext</code> 直接注入到 Sub-Agent 的上下文中</strong>，而不是 Team Lead 的。这使它成为理想的注入点——创建 session（因此拥有 sessionUuid）的 Hook 同时也能注入工作流，一步到位。</p>
+<pre><code class="language-bash"># on-subagent-start.sh — 核心片段
+# 创建/复用 session 并获得 SESSION_UUID 之后...
+
+WORKFLOW="## Chorus Session (Auto-injected by plugin)
+
+Your Chorus session UUID is: ${SESSION_UUID}
+Your session name is: ${SESSION_NAME}
+Do NOT call chorus_create_session or chorus_close_session.
+
+### Workflow — follow these steps for each task:
+
+**Before starting:**
+1. Check in: chorus_session_checkin_task({ sessionUuid: \"${SESSION_UUID}\", taskUuid: \"&#x3C;TASK_UUID>\" })
+2. Start work: chorus_update_task({ taskUuid: \"&#x3C;TASK_UUID>\", status: \"in_progress\", sessionUuid: \"${SESSION_UUID}\" })
+
+**While working:**
+3. Report progress: chorus_report_work({ taskUuid: \"&#x3C;TASK_UUID>\", report: \"...\", sessionUuid: \"${SESSION_UUID}\" })
+
+**After completing:**
+4. Check out: chorus_session_checkout_task({ sessionUuid: \"${SESSION_UUID}\", taskUuid: \"&#x3C;TASK_UUID>\" })
+5. Submit: chorus_submit_for_verify({ taskUuid: \"&#x3C;TASK_UUID>\", summary: \"...\" })
+
+Replace &#x3C;TASK_UUID> with the actual Chorus task UUID from your prompt."
+
+"$API" hook-output \
+  "Chorus session ${SESSION_ACTION}: '${SESSION_NAME}'" \
+  "$WORKFLOW" \
+  "SubagentStart"
 </code></pre>
-<p>Sub-Agent 读取这个文件后，得到了数据（sessionUuid）和指令（workflow）。它只需要把 <code>&#x3C;TASK_UUID></code> 替换为 Team Lead 在 prompt 中给的值，就能直接按步骤执行。</p>
-<p>这样 Team Lead 的 spawn prompt 只需要：</p>
+<p>Sub-Agent 从第一轮对话就能在上下文中以 <code>&#x3C;system-reminder></code> 的形式看到工作流。Session 文件精简为仅含 sessionUuid + 元数据，供其他 Hook 使用。</p>
+<p>这样 Team Lead 的 spawn prompt 真正做到了最简：</p>
 <pre><code class="language-python">Task({
   name: "frontend-worker",
   prompt: """
     Your Chorus task UUID: task-A-uuid
-    Read .chorus/sessions/frontend-worker.json and follow the workflow inside.
-    Then implement the frontend user form component...
+    实现前端用户表单组件...
   """
 })
 </code></pre>
-<p>Bash heredoc 中的 <code>${SESSION_UUID}</code> 会在文件写入时被展开为真实值。</p>
+<p>插件处理其余一切——Team Lead 只需传递 task UUID。</p>
 <h3>5.4 Session 复用：避免重复创建</h3>
 <p>当 Team Lead 多次 spawn 同名的 Sub-Agent 时（比如 Task 被 Admin reopen 后重新分配），插件不会创建新 Session，而是复用已有的：</p>
 <pre><code class="language-bash"># on-subagent-start.sh 中的复用逻辑
@@ -791,13 +836,13 @@ fi
 <hr>
 <h2>六、设计模式总结</h2>
 <p>从 Chorus 插件的实践中，可以提炼出几个通用的设计模式：</p>
-<h3>模式 1：文件系统作为 Sub-Agent 通信通道</h3>
-<pre><code>Hook 写文件  →  Sub-Agent 读文件
-（Team Lead 上下文）    （Sub-Agent 上下文）
+<h3>模式 1：SubagentStart 直接注入上下文</h3>
+<pre><code>SubagentStart Hook  →  additionalContext  →  Sub-Agent 的上下文
+（拥有 session 数据）    （直接注入）            （立即可见）
 </code></pre>
-<p>这是目前向 Sub-Agent 注入上下文的唯一可靠方式。适用于任何需要在 spawn 时传递动态信息给 Sub-Agent 的场景。</p>
-<h3>模式 2：PE 注入到数据文件中</h3>
-<p>不要把数据和指令分开——直接把工作流指令放在 Sub-Agent 必读的数据文件里。Sub-Agent 读取数据的同时就获得了操作指南。</p>
+<p><code>SubagentStart</code> 的 <code>additionalContext</code> 是向 Sub-Agent 注入上下文最可靠的方式。它在 spawn 时同步触发，拥有所有 session 数据，并直接注入 Sub-Agent——不需要文件读取、不需要 prompt 操作、不需要 Team Lead 参与。</p>
+<h3>模式 2：文件系统用于 Hook 间状态传递（而非 Sub-Agent 通信）</h3>
+<p>共享文件系统（<code>.chorus/</code> 目录）的价值在于 <strong>Hook 到 Hook</strong> 的状态传递（如 <code>pending/</code> 文件从 <code>PreToolUse</code> 传递 agent 名称到 <code>SubagentStart</code>），但不应该作为 Sub-Agent 上下文注入的主要机制。上下文注入应使用 <code>SubagentStart</code> 的 <code>additionalContext</code>。</p>
 <h3>模式 3：PreToolUse 捕获 + SubagentStart 执行</h3>
 <p><code>SubagentStart</code> 事件中拿不到 Sub-Agent 的名字（只有 <code>agent_id</code> 和 <code>agent_type</code>），但 <code>PreToolUse:Task</code> 可以从 <code>tool_input</code> 中提取。两个 Hook 通过文件系统（pending → claimed）传递信息。</p>
 <h3>模式 4：异步 Hook 做非阻塞清理</h3>
@@ -864,11 +909,11 @@ claude --plugin-dir ./my-plugin
 <hr>
 <h2>写在最后</h2>
 <p>Claude Code 的插件系统提供了一套完整的扩展机制——从 Marketplace 分发，到 MCP 工具集成，到 Hooks 生命周期管理，再到 Skills 知识注入。Agent Teams（Swarm 模式）的引入让多 Agent 协作成为可能，而插件让这种协作变得可管理、可观测。</p>
-<p>Chorus 插件的实践表明，即使面对"Hook 输出无法直接注入 Sub-Agent prompt"这样的限制，通过巧妙利用共享文件系统和 PE 注入技术，仍然可以实现优雅的自动化工作流。</p>
+<p>Chorus 插件的实践表明，<code>SubagentStart</code> 的 <code>additionalContext</code>——直接注入 Sub-Agent 上下文——是实现无缝多 Agent 工作流自动化的关键。结合共享文件系统的跨 Hook 状态管理和 <code>PreToolUse</code> 的 spawn 时元数据捕获，可以实现完全自动化的 session 生命周期，Team Lead 的 prompt 中零 boilerplate。</p>
 <p>如果你对 Chorus 感兴趣，欢迎访问 <a href="https://github.com/Chorus-AIDLC/chorus" target="_blank" rel="nofollow noopener noreferrer">GitHub</a> 了解更多。如果你正在构建自己的 Claude Code 插件，希望本文的经验能帮你少走弯路。</p></article></div></div></div><div class="cc-statement-sc-1u2jbzw-0 jhCLBz"><div data-gatsby-image-wrapper="" style="width:88px;height:31px" class="gatsby-image-wrapper"><div aria-hidden="true" data-placeholder-image="" style="opacity:1;transition:opacity 500ms linear;background-color:#080808;width:88px;height:31px;position:relative"></div><picture><source type="image/webp" data-srcset="/static/0a798fcfb6a91fca527dc8e232018297/79a2f/CC-BY-NC-ND.webp 88w" sizes="88px"/><img data-gatsby-image-ssr="" data-main-image="" style="opacity:0" sizes="88px" decoding="async" loading="lazy" data-src="/static/0a798fcfb6a91fca527dc8e232018297/fdb8e/CC-BY-NC-ND.png" data-srcset="/static/0a798fcfb6a91fca527dc8e232018297/fdb8e/CC-BY-NC-ND.png 88w" alt="CC BY-NC-ND"/></picture><noscript><picture><source type="image/webp" srcSet="/static/0a798fcfb6a91fca527dc8e232018297/79a2f/CC-BY-NC-ND.webp 88w" sizes="88px"/><img data-gatsby-image-ssr="" data-main-image="" style="opacity:0" sizes="88px" decoding="async" loading="lazy" src="/static/0a798fcfb6a91fca527dc8e232018297/fdb8e/CC-BY-NC-ND.png" srcSet="/static/0a798fcfb6a91fca527dc8e232018297/fdb8e/CC-BY-NC-ND.png 88w" alt="CC BY-NC-ND"/></picture></noscript><script type="module">const t="undefined"!=typeof HTMLImageElement&&"loading"in HTMLImageElement.prototype;if(t){const t=document.querySelectorAll("img[data-main-image]");for(let e of t){e.dataset.src&&(e.setAttribute("src",e.dataset.src),e.removeAttribute("data-src")),e.dataset.srcset&&(e.setAttribute("srcset",e.dataset.srcset),e.removeAttribute("data-srcset"));const t=e.parentNode.querySelectorAll("source[data-srcset]");for(let e of t)e.setAttribute("srcset",e.dataset.srcset),e.removeAttribute("data-srcset");e.complete&&(e.style.opacity=1,e.parentNode.parentNode.querySelector("[data-placeholder-image]").style.opacity=0)}}</script></div><p>本作品采用<a href="http://creativecommons.org/licenses/by/4.0/" target="_blank">知识共享署名4.0署名-非商业性使用-禁止演绎(BY-NC-ND)国际许可协议</a>进行许可，转载  时请注明原文链接，图片在使用时请保留全部内容，但不得对本创作进行修改，亦不得依据本创作进行再创作，不得将本创作运用于商业用途。</p></div></main></div><footer class="footer-sc-1ejc99w-0 fvBZqb"><div class="container"><span class="unit">© <!-- -->2026<!-- -->, <!-- -->Built with<!-- --> <a href="https://www.gatsbyjs.org">Gatsby</a></span><span class="unit">Created by Felix</span><span class="unit"><a target="_blank" href="https://github.com/ChenNima">Github</a></span><span class="unit"><span class="oi oi-envelope-closed"></span> <!-- -->Email:<!-- --> <a href="mailto:fennu637@sina.com">fennu637@sina.com</a></span></div></footer></div><div id="gatsby-announcer" style="position:absolute;top:0;width:1px;height:1px;padding:0;overflow:hidden;clip:rect(0, 0, 0, 0);white-space:nowrap;border:0" aria-live="assertive" aria-atomic="true"></div></div><script id="gatsby-script-loader">/*<![CDATA[*/window.pagePath="/building-claude-code-plugin-for-agent-teams-zh";/*]]>*/</script><!-- slice-start id="_gatsby-scripts-1" -->
           <script
             id="gatsby-chunk-mapping"
           >
             window.___chunkMapping="{\"app\":[\"/app-2795048ddfefcd52b1d0.js\"],\"component---src-pages-404-tsx\":[\"/component---src-pages-404-tsx-7a15318900f1ad709be1.js\"],\"component---src-pages-index-tsx\":[\"/component---src-pages-index-tsx-cee35e98fd6067d04857.js\"],\"component---src-templates-blog-list-tsx\":[\"/component---src-templates-blog-list-tsx-f27074de8eb9773f745c.js\"],\"component---src-templates-blog-post-tsx\":[\"/component---src-templates-blog-post-tsx-60e365abd567197c282e.js\"],\"component---src-templates-resume-tsx\":[\"/component---src-templates-resume-tsx-f6480a3c23e3ebf28a01.js\"]}";
           </script>
-        <script>window.___webpackCompilationHash="e41207df075d7ca89800";</script><script src="/webpack-runtime-1f55e8babd64a2459d0e.js" async></script><script src="/framework-42a55ab368534c331835.js" async></script><script src="/app-2795048ddfefcd52b1d0.js" async></script><!-- slice-end id="_gatsby-scripts-1" --></body></html>
+        <script>window.___webpackCompilationHash="2c85c4771365b7c332b8";</script><script src="/webpack-runtime-1f55e8babd64a2459d0e.js" async></script><script src="/framework-42a55ab368534c331835.js" async></script><script src="/app-2795048ddfefcd52b1d0.js" async></script><!-- slice-end id="_gatsby-scripts-1" --></body></html>

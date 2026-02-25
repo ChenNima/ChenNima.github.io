@@ -37,17 +37,20 @@ Team Lead 通过 `Task` 工具 spawn 多个 Sub-Agent，每个 Sub-Agent 是一�
 
 关键生命周期事件：
 
-| 事件 | 触发时机 | 上下文 |
-|------|----------|--------|
+| 事件 | 触发时机 | `additionalContext` 注入目标 |
+|------|----------|---------------------------|
 | `PreToolUse:Task` | Team Lead 调用 Task 工具**之前** | Team Lead |
-| `SubagentStart` | Sub-Agent 进程启动时（同步） | Team Lead |
+| `SubagentStart` | Sub-Agent 进程启动时（同步） | **Sub-Agent** |
 | `TeammateIdle` | Sub-Agent 空闲（完成一轮对话） | Team Lead |
 | `TaskCompleted` | Claude Code 内部 Task 标记完成 | Team Lead |
 | `SubagentStop` | Sub-Agent 进程退出时 | Team Lead |
 
-注意一个关键事实：**所有这些 Hook 都在 Team Lead 的上下文中触发**，它们的输出（`additionalContext`）注入的是 Team Lead 的对话，而不是 Sub-Agent 的。Sub-Agent 的起始 prompt 完全由 Task 工具的 `prompt` 参数决定——没有任何 Hook 可以直接修改它。
+注意一个关键区别——Hook 输出的注入目标并不相同：
 
-这意味着，如果你想让 Sub-Agent 自动获得某些上下文信息（比如会话 ID、工作流指令），你需要找到间接的注入方式。这正是本文的核心话题。
+- 大多数 Hook（`PreToolUse:Task`、`TeammateIdle`、`TaskCompleted`、`SubagentStop`）的 `additionalContext` 注入到 **Team Lead** 的上下文
+- **`SubagentStart` 是例外**——它的 `additionalContext` 直接注入到 **Sub-Agent** 的上下文
+
+这意味着 `SubagentStart` 是向 Sub-Agent 自动提供工作上下文（Session ID、工作流指令等）的理想 Hook——不需要 Team Lead 手写 boilerplate，也不需要 Sub-Agent 读取文件。
 
 ---
 
@@ -90,11 +93,17 @@ Chorus 通过 **Session** 机制追踪这一切——每个工作中的 Agent �
 
 Chorus 中的 Task 可以声明依赖关系，形成有向无环图。PM Agent 在创建 Proposal 时通过 `dependsOnDraftUuids` 设置依赖。UI 使用 dagre 自动布局。Team Lead 可以据此决定 spawn 顺序——先处理没有依赖的 Task，被依赖的 Task 完成后，下游 Task 自动解除阻塞。
 
+**Elaboration — 结构化需求细化**
+
+![Elaboration](./elaboration.png)
+
+在 Idea 进入 Proposal 之前，PM Agent 会发起 Elaboration（需求细化）：针对 Idea 提出结构化问题（功能范围、技术选型、优先级等），人类通过交互式选项回答。所有问答作为审计轨迹持久化到 Idea 上，确保设计决策有据可查——即使是口头讨论中达成的共识，也会被记录下来。
+
 **Proposal — AI 提出方案，人类审核**
 
 ![Proposal](./proposal.png)
 
-这是 AI-DLC 的核心理念"反转对话"的体现：PM Agent 分析 Idea 后，创建包含 PRD 文档草案和 Task 草案的 Proposal。Admin（人类）审核通过后，草案自动物化为真实的 Document 和 Task 实体。
+这是 AI-DLC 的核心理念"反转对话"的体现：PM Agent 基于 Elaboration 的结论，创建包含 PRD 文档草案和 Task 草案的 Proposal。Admin（人类）审核通过后，草案自动物化为真实的 Document 和 Task 实体。
 
 **Task 详情 — Session 追踪**
 
@@ -151,13 +160,12 @@ Task({
   name: "frontend-worker",
   prompt: """
     你的 Chorus task UUID: task-A-uuid
-    读取 .chorus/sessions/frontend-worker.json，按里面的 workflow 指令操作。
-    然后实现前端用户表单组件...
+    实现前端用户表单组件...
   """
 })
 ```
 
-从 15 行 boilerplate 到 3 行。其余的全部由插件在 Hook 中自动处理。
+从 15 行 boilerplate 到 2 行。Team Lead 只需传递 task UUID——插件的 `SubagentStart` Hook 会自动将 session UUID 和完整的工作流指令直接注入到 Sub-Agent 的上下文中。不需要读取 session 文件，不需要复制工作流模板。
 
 ---
 
@@ -399,11 +407,13 @@ Chorus 插件的所有 Hook 都使用 `command` 类型——因为 Chorus 的 Ho
 
 **`SessionStart` — Checkin + 上下文注入**
 
-这是插件的"开机自检"。Chorus 在这里做三件事：
+这是插件的"开机自检"。注意 `SessionStart` 的 matcher 配置为 `startup|resume|compact`，这意味着它不仅在会话启动和恢复时触发，**还会在上下文压缩（compact）后重新触发**。当长对话触发自动压缩时，之前注入的 Chorus 上下文会随着旧消息被压缩而丢失——`compact` matcher 确保压缩后立即重新注入最新的 checkin 信息，Agent 不会因为上下文压缩而"失忆"。
+
+Chorus 在这里做三件事：
 
 1. 调用 `chorus_checkin()` MCP 工具，获取当前 Agent 的身份（角色、名称、人格）、已分配的 Idea 和 Task、未读通知
 2. 将完整的 checkin 结果通过 `additionalContext` 注入到 Claude 的上下文中——Agent 一启动就知道自己是谁、该做什么
-3. 扫描 `.chorus/sessions/` 目录，列出已有的 Sub-Agent session 文件——这是为了处理 Claude Code 会话中断后恢复的情况：上次的 Sub-Agent session 文件可能还在，Team Lead 恢复后需要知道哪些 session 仍然存在
+3. 扫描 `.chorus/sessions/` 目录，列出已有的 Sub-Agent session 元数据——这是为了处理 Claude Code 会话中断后恢复的情况：上次的 session 文件可能还在，Team Lead 恢复后需要知道哪些 session 仍然存在
 
 ```bash
 # on-session-start.sh 核心逻辑
@@ -443,13 +453,13 @@ Chorus 注册了 3 个 `PreToolUse` Hook，分别匹配不同的工具：
 |---------|------|--------------|
 | `EnterPlanMode` | [`on-pre-enter-plan.sh`](https://github.com/Chorus-AIDLC/Chorus/blob/main/public/chorus-plugin/bin/on-pre-enter-plan.sh) | 注入 Chorus Proposal 工作流指南——"先创建 Proposal，设置 Task 依赖 DAG，提交审批后再编码" |
 | `ExitPlanMode` | [`on-pre-exit-plan.sh`](https://github.com/Chorus-AIDLC/Chorus/blob/main/public/chorus-plugin/bin/on-pre-exit-plan.sh) | 提醒检查——"退出 Plan Mode 前确认 Proposal 已创建并提交" |
-| `Task` | [`on-pre-spawn-agent.sh`](https://github.com/Chorus-AIDLC/Chorus/blob/main/public/chorus-plugin/bin/on-pre-spawn-agent.sh) | 捕获 Sub-Agent 的 name/type 写入 pending 文件；通过 `additionalContext` 提醒 Team Lead 在 prompt 中包含 task UUID |
+| `Task` | [`on-pre-spawn-agent.sh`](https://github.com/Chorus-AIDLC/Chorus/blob/main/public/chorus-plugin/bin/on-pre-spawn-agent.sh) | 捕获 Sub-Agent 的 name/type 写入 pending 文件，供 SubagentStart 认领 |
 
 `EnterPlanMode` 和 `ExitPlanMode` 展示了一个有趣的用法：**用 Hook 引导 Agent 遵循特定的工作流程**。当 Agent 进入 Plan Mode 时，Chorus 自动注入"先创建 Proposal 再编码"的指导；退出 Plan Mode 时，检查是否已有 Proposal。这不是强制阻断（`permissionDecision` 仍然是 `allow`），而是通过 `additionalContext` 做软性引导。
 
-**`SubagentStart` — Session 自动创建 + PE 注入**（核心）
+**`SubagentStart` — Session 自动创建 + 直接上下文注入**（核心）
 
-这是 Chorus 插件最核心的 Hook，详见第五章。简要概括：认领 pending 文件 → 创建/复用 Session → 写 session file（含 workflow PE）→ 存储状态映射。
+这是 Chorus 插件最核心的 Hook，详见第五章。简要概括：认领 pending 文件 → 创建/复用 Session → 通过 `additionalContext` 将 session UUID + 工作流指令直接注入 Sub-Agent 上下文 → 存储状态映射。Session 文件仅保存最小元数据供其他 Hook 使用。
 
 **`SubagentStop` — 自动清理 + 任务发现**
 
@@ -480,17 +490,17 @@ Team Lead 调用 Task 工具 spawn Sub-Agent
   │
   ├─ [PreToolUse:Task] on-pre-spawn-agent.sh
   │    写入 .chorus/pending/<name> 文件（捕获 agent name）
-  │    向 Team Lead 注入提醒："在 prompt 里包含 task UUID"
   │
   ├─ [SubagentStart] on-subagent-start.sh    ← 核心
   │    认领 pending 文件（原子 mv，处理并发）
   │    创建/复用/重开 Chorus Session（MCP 调用）
-  │    写入 .chorus/sessions/<name>.json（含 workflow PE）
+  │    通过 additionalContext 将 session UUID + 工作流注入 Sub-Agent
+  │    写入最小 session 文件（元数据供其他 Hook 使用）
   │    存储 state 映射（agent_id ↔ session_uuid）
   │
   ├─ Sub-Agent 开始执行
-  │    读取 .chorus/sessions/<name>.json → 获得 sessionUuid + 工作流指令
-  │    按 workflow 字段自主执行 checkin → in_progress → report → checkout → submit
+  │    Session UUID + 工作流已在上下文中（自动注入）
+  │    自主执行 checkin → in_progress → report → checkout → submit
   │
   ├─ [TeammateIdle] on-teammate-idle.sh（异步）
   │    发送 session heartbeat，保持 session 活跃
@@ -513,7 +523,7 @@ Team Lead 调用 Task 工具 spawn Sub-Agent
 .chorus/                              # 插件运行时状态（gitignored）
 ├── state.json                        # 全局状态 KV 存储
 ├── state.json.lock                   # flock 排他锁文件
-├── sessions/                         # Sub-Agent session 文件（含 workflow PE）
+├── sessions/                         # Sub-Agent session 元数据（供 Hook 状态查询）
 │   ├── frontend-worker.json
 │   ├── backend-worker.json
 │   └── test-runner.json
@@ -587,16 +597,17 @@ state_set() {
 
 `mv` 在同一文件系统上是原子操作——只有一个进程能成功移动同一个文件。这比 flock 更轻量，适合"谁先到谁拿"的场景。
 
-#### `sessions/` — Sub-Agent 的信息入口
+#### `sessions/` — 跨 Hook 的状态查询入口
 
-这是对 Sub-Agent 唯一可见的部分。每个 session file 既是数据（sessionUuid），也是指令（workflow PE）。文件名就是 agent name——Sub-Agent 只需 `Read .chorus/sessions/<my-name>.json` 就能获得一切。
+Session 文件现在只包含最小元数据（sessionUuid、agentId、agentName）。工作流指令通过 `SubagentStart` 的 `additionalContext` 直接注入 Sub-Agent 上下文——Sub-Agent 不再需要读取这些文件。文件仍有作用：其他 Hook（`TeammateIdle`、`SubagentStop`）用它来查找 session 信息以执行心跳和清理。
 
 #### 生命周期：创建到清理
 
 ```
 SessionStart  → mkdir -p .chorus/（如果不存在）
 PreToolUse    → 写 .chorus/pending/<name>
-SubagentStart → mv pending → claimed，写 sessions/<name>.json，更新 state.json
+SubagentStart → mv pending → claimed，写 sessions/<name>.json（仅元数据），
+                通过 additionalContext 注入工作流 → Sub-Agent，更新 state.json
 TeammateIdle  → 读 state.json（查 session_uuid），无写入
 TaskCompleted → 读 state.json（查 session_uuid），无写入
 SubagentStop  → 删 sessions/<name>.json，删 claimed/<agent_id>，清 state.json 条目
@@ -607,54 +618,56 @@ SessionEnd    → 如果 sessions/ 为空且 state.json 为空 → rm -rf .choru
 
 ### 5.3 核心难题：Sub-Agent 的上下文注入
 
-前面提到，所有 Hook 的输出都只注入到 Team Lead 的上下文中。那么，如何让 Sub-Agent 也能获得必要的信息？
+关键问题是：如何让每个 Sub-Agent 自动获得它的 session UUID 和工作流指令，而不需要 Team Lead 手写 boilerplate？
 
-Chorus 插件的答案是：**利用共享文件系统作为信息传递通道**。
-
-Sub-Agent 虽然和 Team Lead 不共享上下文窗口，但它们共享同一个文件系统。而 Team Lead 的 spawn prompt 里一定会告诉 Sub-Agent 去读某个文件——这个文件就成了上下文注入的天然入口。
-
-#### 实现：Session file 内嵌 workflow PE
-
-[`SubagentStart` Hook](https://github.com/Chorus-AIDLC/Chorus/blob/main/public/chorus-plugin/bin/on-subagent-start.sh) 在写 session file 时，除了 sessionUuid 等数据字段外，额外写入一个 `workflow` 数组——包含完整的 5 步工作流指令，且每个 MCP 调用示例中的 sessionUuid 都是**真实值**（Bash heredoc 在写文件时展开变量）：
+答案在于 `SubagentStart` Hook 的一个关键特性：**它的 `additionalContext` 直接注入到 Sub-Agent 的上下文中**，而不是 Team Lead 的。这使它成为理想的注入点——创建 session（因此拥有 sessionUuid）的 Hook 同时也能注入工作流，一步到位。
 
 ```bash
-# on-subagent-start.sh 核心片段
-cat > "${SESSIONS_DIR}/${SESSION_NAME}.json" <<SESSIONEOF
-{
-  "sessionUuid": "${SESSION_UUID}",
-  "agentName": "${SESSION_NAME}",
-  "workflow": [
-    "=== Chorus Workflow — FOLLOW THESE STEPS ===",
-    "Your Chorus session UUID is: ${SESSION_UUID}",
-    "",
-    "1. Check in: chorus_session_checkin_task({ sessionUuid: \"${SESSION_UUID}\", taskUuid: \"<TASK_UUID>\" })",
-    "2. Start:    chorus_update_task({ taskUuid: \"<TASK_UUID>\", status: \"in_progress\", sessionUuid: \"${SESSION_UUID}\" })",
-    "3. Report:   chorus_report_work({ taskUuid: \"<TASK_UUID>\", report: \"...\", sessionUuid: \"${SESSION_UUID}\" })",
-    "4. Checkout:  chorus_session_checkout_task({ sessionUuid: \"${SESSION_UUID}\", taskUuid: \"<TASK_UUID>\" })",
-    "5. Submit:   chorus_submit_for_verify({ taskUuid: \"<TASK_UUID>\", summary: \"...\" })",
-    "",
-    "Replace <TASK_UUID> with the actual Chorus task UUID provided in your prompt."
-  ]
-}
-SESSIONEOF
+# on-subagent-start.sh — 核心片段
+# 创建/复用 session 并获得 SESSION_UUID 之后...
+
+WORKFLOW="## Chorus Session (Auto-injected by plugin)
+
+Your Chorus session UUID is: ${SESSION_UUID}
+Your session name is: ${SESSION_NAME}
+Do NOT call chorus_create_session or chorus_close_session.
+
+### Workflow — follow these steps for each task:
+
+**Before starting:**
+1. Check in: chorus_session_checkin_task({ sessionUuid: \"${SESSION_UUID}\", taskUuid: \"<TASK_UUID>\" })
+2. Start work: chorus_update_task({ taskUuid: \"<TASK_UUID>\", status: \"in_progress\", sessionUuid: \"${SESSION_UUID}\" })
+
+**While working:**
+3. Report progress: chorus_report_work({ taskUuid: \"<TASK_UUID>\", report: \"...\", sessionUuid: \"${SESSION_UUID}\" })
+
+**After completing:**
+4. Check out: chorus_session_checkout_task({ sessionUuid: \"${SESSION_UUID}\", taskUuid: \"<TASK_UUID>\" })
+5. Submit: chorus_submit_for_verify({ taskUuid: \"<TASK_UUID>\", summary: \"...\" })
+
+Replace <TASK_UUID> with the actual Chorus task UUID from your prompt."
+
+"$API" hook-output \
+  "Chorus session ${SESSION_ACTION}: '${SESSION_NAME}'" \
+  "$WORKFLOW" \
+  "SubagentStart"
 ```
 
-Sub-Agent 读取这个文件后，得到了数据（sessionUuid）和指令（workflow）。它只需要把 `<TASK_UUID>` 替换为 Team Lead 在 prompt 中给的值，就能直接按步骤执行。
+Sub-Agent 从第一轮对话就能在上下文中以 `<system-reminder>` 的形式看到工作流。Session 文件精简为仅含 sessionUuid + 元数据，供其他 Hook 使用。
 
-这样 Team Lead 的 spawn prompt 只需要：
+这样 Team Lead 的 spawn prompt 真正做到了最简：
 
 ```python
 Task({
   name: "frontend-worker",
   prompt: """
     Your Chorus task UUID: task-A-uuid
-    Read .chorus/sessions/frontend-worker.json and follow the workflow inside.
-    Then implement the frontend user form component...
+    实现前端用户表单组件...
   """
 })
 ```
 
-Bash heredoc 中的 `${SESSION_UUID}` 会在文件写入时被展开为真实值。
+插件处理其余一切——Team Lead 只需传递 task UUID。
 
 ### 5.4 Session 复用：避免重复创建
 
@@ -705,18 +718,18 @@ Sub-Agent 在两轮对话之间会进入 idle 状态，此时 `TeammateIdle` Hoo
 
 从 Chorus 插件的实践中，可以提炼出几个通用的设计模式：
 
-### 模式 1：文件系统作为 Sub-Agent 通信通道
+### 模式 1：SubagentStart 直接注入上下文
 
 ```
-Hook 写文件  →  Sub-Agent 读文件
-（Team Lead 上下文）    （Sub-Agent 上下文）
+SubagentStart Hook  →  additionalContext  →  Sub-Agent 的上下文
+（拥有 session 数据）    （直接注入）            （立即可见）
 ```
 
-这是目前向 Sub-Agent 注入上下文的唯一可靠方式。适用于任何需要在 spawn 时传递动态信息给 Sub-Agent 的场景。
+`SubagentStart` 的 `additionalContext` 是向 Sub-Agent 注入上下文最可靠的方式。它在 spawn 时同步触发，拥有所有 session 数据，并直接注入 Sub-Agent——不需要文件读取、不需要 prompt 操作、不需要 Team Lead 参与。
 
-### 模式 2：PE 注入到数据文件中
+### 模式 2：文件系统用于 Hook 间状态传递（而非 Sub-Agent 通信）
 
-不要把数据和指令分开——直接把工作流指令放在 Sub-Agent 必读的数据文件里。Sub-Agent 读取数据的同时就获得了操作指南。
+共享文件系统（`.chorus/` 目录）的价值在于 **Hook 到 Hook** 的状态传递（如 `pending/` 文件从 `PreToolUse` 传递 agent 名称到 `SubagentStart`），但不应该作为 Sub-Agent 上下文注入的主要机制。上下文注入应使用 `SubagentStart` 的 `additionalContext`。
 
 ### 模式 3：PreToolUse 捕获 + SubagentStart 执行
 
@@ -813,6 +826,6 @@ claude --plugin-dir ./my-plugin
 
 Claude Code 的插件系统提供了一套完整的扩展机制——从 Marketplace 分发，到 MCP 工具集成，到 Hooks 生命周期管理，再到 Skills 知识注入。Agent Teams（Swarm 模式）的引入让多 Agent 协作成为可能，而插件让这种协作变得可管理、可观测。
 
-Chorus 插件的实践表明，即使面对"Hook 输出无法直接注入 Sub-Agent prompt"这样的限制，通过巧妙利用共享文件系统和 PE 注入技术，仍然可以实现优雅的自动化工作流。
+Chorus 插件的实践表明，`SubagentStart` 的 `additionalContext`——直接注入 Sub-Agent 上下文——是实现无缝多 Agent 工作流自动化的关键。结合共享文件系统的跨 Hook 状态管理和 `PreToolUse` 的 spawn 时元数据捕获，可以实现完全自动化的 session 生命周期，Team Lead 的 prompt 中零 boilerplate。
 
 如果你对 Chorus 感兴趣，欢迎访问 [GitHub](https://github.com/Chorus-AIDLC/chorus) 了解更多。如果你正在构建自己的 Claude Code 插件，希望本文的经验能帮你少走弯路。
