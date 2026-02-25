@@ -1,2 +1,4 @@
 User-agent: *
 Disallow:
+
+Sitemap: https://chennima.github.io/sitemap-index.xml
