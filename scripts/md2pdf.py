@@ -83,8 +83,9 @@ p {
     margin: 4px 0;
 }
 
+/* Show phone number in PDF (hidden on web via Bootstrap d-none) */
 .d-none {
-    display: none;
+    display: inline;
 }
 
 .d-flex {
