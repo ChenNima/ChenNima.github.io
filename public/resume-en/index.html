@@ -57,103 +57,126 @@ data-styled.g5[id="resume-sc-16bs2rv-0"]{content:"drKkoV,"}/*!sc*/
 <li>LinkedIn: <a href="https://www.linkedin.com/in/yifei-chen-990199110/" target="_blank" rel="nofollow noopener noreferrer">https://www.linkedin.com/in/yifei-chen-990199110/</a></li>
 <li>E-mail: <a href="mailto:fennu637@sina.com" target="_blank" rel="nofollow noopener noreferrer">fennu637@sina.com</a><span class="d-none"> / Phone：18918561263</span></li>
 </ul>
-<h1>Working Experience</h1>
-<h2>SAP Labs China （ 2016.10 ~  ）</h2>
-<p>Architect, Web development(Frontend/backend), DevOps and data engineer</p>
-<h3><strong>Architect</strong>/<small>SAP Concur</small> （ 2021.1 ~  ）</h3>
-<p>Design and develop "SAP Concur eFapiao" service, what is a fapiao auto-recognition and validation system base on <code>NodeJS</code> and WeChat mini program.</p>
+<h1>Open Source Projects</h1>
 <ul>
-<li>DevOps
+<li><a href="https://github.com/Chorus-AIDLC/chorus" target="_blank" rel="nofollow noopener noreferrer">Chorus</a>: An Agent harness framework based on <a href="https://aws.amazon.com/blogs/devops/ai-driven-development-life-cycle/" target="_blank" rel="nofollow noopener noreferrer">AI-DLC</a> methodology, adopting Reversed Conversation mode (AI proposes, humans review), enabling AI Agents and humans to collaborate on product delivery from Idea to Proposal to Task
 <ul>
-<li>Operating and deploying the project on AWS and <code>Kubernetes</code></li>
-<li>Service registration and discovery base on Concur customized <code>Istio</code>+<code>Envoy</code> service mesh</li>
+<li><a href="https://github.com/Chorus-AIDLC/Chorus/tree/main/public/chorus-plugin" target="_blank" rel="nofollow noopener noreferrer">Claude Code Plugin</a>: Automatic Session management and context injection for Sub-Agents in Agent Teams (Swarm) scenarios via Hooks mechanism</li>
+<li><a href="https://www.npmjs.com/package/@chorus-aidlc/chorus-openclaw-plugin" target="_blank" rel="nofollow noopener noreferrer">OpenClaw Plugin</a>: SSE + MCP dual-channel architecture enabling AI Agents to autonomously detect tasks and drive product delivery 24/7</li>
 </ul>
 </li>
-<li>Backend development
+</ul>
+<h1>Working Experience</h1>
+<h2>Amazon Web Services （ 2023.6 ~ Present ）</h2>
+<h3><strong>Solutions Builder</strong>/<small>AWS Solutions</small> （ 2023.6 ~ Present ）</h3>
+<p>Design and develop AWS-based industry solutions, focusing on healthcare and AI Agent domains</p>
 <ul>
-<li>Backend service base on <code>NodeJS</code> and <code>NestJS</code> framework</li>
-<li>The data backend is AWS distributed database <code>DynamoDB</code></li>
+<li>Solution Development:
+<ul>
+<li>Developed MCS (Marketing &#x26; Commercial Set), an AI-powered knowledge management and training assistant for pharmaceutical sales teams based on <a href="https://strandsagents.com/latest/" target="_blank" rel="nofollow noopener noreferrer">Strands Agents</a> and <code>Amazon Bedrock</code>. Built GraphRAG knowledge graph with <code>Amazon Neptune</code> + <code>OpenSearch Serverless</code>, supporting STAR case methodology, AI-driven sales strategy recommendation and simulation training</li>
+<li>Developed <a href="https://mp.weixin.qq.com/s/ony8yF8s_gP7NAcLeU9r6w" target="_blank" rel="nofollow noopener noreferrer">Medical Deep Insights</a>, a medical content generation assistant based on <a href="https://strandsagents.com/latest/" target="_blank" rel="nofollow noopener noreferrer">Strands Agents</a>. Supports rapid Agent and Tool generation via YAML configuration and AI coding assistant (Skill), integrates 15+ tools including PubMed/clinical trials/patent search, extends capabilities through MCP protocol, deployed on <code>Bedrock AgentCore</code></li>
+<li>Developed <a href="https://www.amazonaws.cn/en/solutions/industry/health/medical-insights-hub/" target="_blank" rel="nofollow noopener noreferrer">Medical Insights Hub</a>, an AWS-based medical content generation solution. GenAI-powered professional medical document translation with <code>OpenSearch Percolate</code> supporting million-level glossary matching; supports integration with external knowledge bases like PubMed for collaborative medical content generation, with Word plugin integration</li>
+</ul>
+</li>
+</ul>
+<h2>SAP Labs China （ 2016.10 ~ 2023.6 ）</h2>
+<p>Architect, Web development (Frontend/backend), DevOps and data engineer.</p>
+<h3><strong>Architect</strong>/<small>SAP Concur</small> （ 2021.1 ~ 2023.6 ）</h3>
+<p>Design and develop SAP Concur eFapiao, a fapiao auto-recognition and validation system based on <code>NodeJS</code> and WeChat mini program</p>
+<ul>
+<li>DevOps:
+<ul>
+<li>Operating and deploying the project on AWS and <code>Kubernetes</code></li>
+<li>Service registration and discovery based on Concur customized <code>Istio</code>+<code>Envoy</code> service mesh</li>
+</ul>
+</li>
+<li>Backend development:
+<ul>
+<li>Backend service based on <code>NodeJS</code> and <code>NestJS</code> framework</li>
+<li>Data backend based on AWS distributed database <code>DynamoDB</code></li>
 </ul>
 </li>
 <li>Data engineering:
 <ul>
-<li>Collecting metrics generated by the running service and integrate with data pipeline with <code>AWS S3</code> and <code>AWS Kinesis</code> data stream</li>
-<li>Utilizing <code>AWS Glue Job</code> to implement data ETL Job base on <code>Spark</code></li>
+<li>Collecting metrics generated by the running service and integrating with data pipeline via <code>AWS S3</code> and <code>AWS Kinesis</code> data stream</li>
+<li>Utilizing <code>AWS Glue Job</code> to implement data ETL jobs based on <code>Spark</code></li>
 <li>Utilizing <code>Grafana</code> and <code>AWS Athena</code> to query and visualize collected metrics data</li>
 </ul>
 </li>
 <li>Machine learning:
 <ul>
-<li>Deploying OCR model base on <code>PaddleOCR</code> to mark those unrecognized fields of fapiao image</li>
-<li>Training key information extraction model base on <code>SDMG-R</code> model and perform information extraction from fapiao image</li>
+<li>Deploying OCR model based on <code>PaddleOCR</code> to mark unrecognized fields of fapiao images</li>
+<li>Training key information extraction model based on <code>SDMG-R</code> to extract key fields from fapiao images</li>
 </ul>
 </li>
 </ul>
-<h3><strong>Senior DevOps</strong>/<small>SAP Jam Collaboration</small> （ 2020.3 ~ 2020.12 ）</h3>
-<p>SAP Jam Collaboration(a.k.a Jam) is a collaboration tool based on <code>Ruby on Rails</code> as backend and <code>React</code>，<code>BackboneJS</code> as frontend.</p>
+<h3><strong>Senior DevOps</strong>/<small>SAP Jam Collaboration</small> （ 2019.3 ~ 2020.12 ）</h3>
+<p>SAP Jam Collaboration is a collaboration tool based on <code>Ruby on Rails</code>/<code>React</code>.</p>
 <ul>
-<li>
-<p>Lead the DevOps team evolving the architecture. Including introducing <code>Consul</code> which works with <code>HAproxy</code> we already have to implement dynamic service registration/discovering and <code>Service Mesh</code> in legacy data centers which do not have the infrastructure for Kubernetes; introducing <code>Prometheus</code> for refactoring original logging system and monitoring system.</p>
-</li>
-<li>
-<p>Work with international teams. Achieved around-the-clock support of DevOps topics across multiple timezone.</p>
-</li>
-</ul>
-<h3><strong>DevOps</strong>/<small>SAP Jam Collaboration</small>（ 2019.3 ~ 2020.3 ）</h3>
-<ul>
-<li>Migrate the whole project to AWS <code>Kubernetes</code> from SAP owned data-center which was deployed with docker container</li>
-<li>Writing <code>Terraform</code> for managing infrastructure</li>
-<li>Splitting and decoupling micro services into individual <code>Helm</code> Charts and deploying them separately</li>
-<li>Utilizing <code>ArgoCD</code> for implementing <code>GitOps</code> workflow</li>
-<li>Deploying <code>Istio</code> service mesh and implementing canary deployment, traffic monitoring and etc</li>
+<li>Led the DevOps team to migrate the project from on-premise data centers to AWS <code>Kubernetes</code>, managing infrastructure and GitOps workflows with <code>Terraform</code>/<code>Helm</code>/<code>ArgoCD</code></li>
+<li>Introduced <code>Consul</code>+<code>HAproxy</code> for service discovery, deployed <code>Istio</code> Service Mesh for canary deployment and traffic monitoring</li>
+<li>Collaborated with international teams, supporting around-the-clock DevOps operations across multiple timezones</li>
 </ul>
 <h3><strong>Full Stack Developer</strong>/<small>SAP Jam Collaboration</small> （ 2017.10 ~ 2019.3 ）</h3>
-<p>Both frontend and backend(<code>Ruby/NodeJS/Golang</code>) development.</p>
 <ul>
-<li>Frontend:
-<ul>
-<li>Creating an abstract layer for combine <code>BackboneJS</code> and <code>React</code> components organically, implemented division of new and old code</li>
-<li>Migrate new features' development to using <code>React</code>/<code>Typescript</code>/<code>Styled-Component</code> tech-stack while not affect old code and feature.</li>
+<li>Frontend: Built <code>BackboneJS</code> → <code>React</code>/<code>TypeScript</code> migration abstraction layer, enabling old and new code coexistence</li>
+<li>Backend: Developed <code>NodeJS</code>-based SSR service, <code>Golang</code>-based multi-storage file service (S3/Azure Blob/NAS)</li>
 </ul>
-</li>
-<li>Backend:
-<ul>
-<li>Maintaining <code>Ruby on Rails</code> backend service</li>
-<li>Implementing micro-services based on <code>NodeJS</code>, including <code>server-side-rendering</code> service for React components and pre-rendering service for <code>SEO</code></li>
-<li>Implementing file storage service based on <code>Golang</code>. The major purpose was providing a unified interface for storing files to media like <code>NAS file system</code>, <code>AWS S3 Bucket</code>, <code>Azure Blob Storage</code> and etc</li>
-</ul>
-</li>
-</ul>
-<h3><strong>Frontend Developer</strong>/<small>SAP Jam Community</small> （ 2016.10 ~  2017.10 ）</h3>
-<p>SAP Jam Community is a social platform based on <code>EmberJS</code>/<code>Vue</code> and <code>Ruby on rails</code>. During this period of job, my major job was frontend developing. Other then creating <code>EmberJS</code> component, I also wrote a front-back-end-separated management tool using <code>Vue</code>.</p>
-<h2>CareerBuilder China （ 2016.4 ~  2016.10 ）</h2>
-<h3><strong>Intern Web developer</strong></h3>
-<p>Implement web service based on <code>AngularJS</code>/<code>Ruby on Rails</code>/<code>NodeJS</code></p>
+<h3><strong>Frontend Developer</strong>/<small>SAP Jam Community</small> （ 2016.10 ~ 2017.10 ）</h3>
+<p>Frontend development for a social platform based on <code>EmberJS</code>/<code>Vue</code>/<code>Ruby on Rails</code></p>
 <h1>Certifications</h1>
 <p class="d-flex justify-content-between">
+  <span style="width: 100px"><span class="gatsby-resp-image-wrapper" style="position: relative; display: block; margin-left: auto; margin-right: auto; max-width: 160px; ">
+      <a class="gatsby-resp-image-link" href="/static/987925aef8bb6662bca2315a8ebf6054/69538/AWS-Certified-Machine-Learning-Engineer.png" style="display: block" target="_blank" rel="noopener">
+    <span class="gatsby-resp-image-background-image" style="padding-bottom: 100%; position: relative; bottom: 0; left: 0; background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAACXBIWXMAAAsTAAALEwEAmpwYAAAElklEQVR42o2VC1CUVRiGjUkUSlQQ5H5pYQXaC//Cwu7+7K4Lk1wUdEUYBUUpaFWWi8ICm5cNRRSNEcksjZJKHUemUGYkzanMxDWTEXEzVGIMEoZAMy57/3n70eRSWn4zZ+bMfGee837nnO89U6Y8JTQajY1GA5vR+SLcsxfvMm4R7zGqpcD0x3nYAHhhyv8GvegJaHQu+cgoF28w6qRyQLIEEOfrr0d9bEwY35he+yzwY9DjpLDORIhKDI1kihVhfAoEd5gK4w1SRDgFrtwEoXrgVNQpcP5WMS5igrRHIOkPcCW3Gasj15j1pAxYkWykikuMIyVqA9IyTNi7/sBI+eoa6lXhEPireocF2wYq5e1wmch4FLGNI9PIPWYludbULVkIkOEmKkKgpxTrjdhepoeq+E9k5w/ioGo/3llXBQarg2Kxb1Ac2a8g3ujsIvcaFMknYDsGJKsMSlk6IIqwWIU0SEgaICSHEb9oACnL/0Ci/HdkZPUiJrEHMYs7wQprBZPbDP/gJooReMnKTuqCaJ8hcwworjCrJDG0MpHeTIoNEEuHQIofIHpBH+ISeiCJ7kRkVDtkMbcgjtaBHdaMIEILf84F+AaetTAiLkO4ZzB3XOFuc+FoqWG8IUsI7yH4gn4II3vAF9FqeO0ICW8DIdCByWlGAPsy5nGb4M89D2e/LzHbo97qJ2yCYPfDnDGgcJe5ULoI2F46bCkrH0R27n1sLb2Pt7b2oqD4HtIzO5C65haystuwNu9npGZcQ8EmHRT5zUhO+44Gngd/5ySg8ZHCjIx+S0FRH4rUvcjZ+BuU+XeRveEXrHz9JlLSW6Es+AmK3BbIUy8hK/cK3szTYtPbV6w+wq/A3/EgZ0LJxsKIBSYEBt+1BLDuYK6PDqmrO6Ap60Keqh2l5R0o2txGw65jo7oVoZKzsJ1zFDM8P8Msrxqra2jD5JJHgfzXBsAhbls4/JsICmmBLLYVKatu0GXqkKVswcJllyBPu4hlqy8gOLweLgFH4BxQCwev96wuvDoIdk5SqC/kRfcjiH3DEkRcA4f/I32DTfAK/BYezLNwCzgNN+ZJODPq4Oh3jIZ9CrfAWsx+5SBe9thrdQo5NhkoqtCrOJIuzGNdNTNYWhAiLZJSr2Lx8stYsqIJcUnnIY49g6jERsgSGhCT1AAG7zDsPKtg715hmRl8CBG7+ic8m8phJSHvh3+Q1urN/JoKIS8gdulFzI//BlEJ5yCOawRvfj1EMV+AH30cobIj8OK8j6lzd1BTnUutc2Un6Yc9lDmh9TBNUD6oZK+40x0guApX3wbKyedzysnvBGZ6H8EMr8P0OAQ79/2Y7r4Pti4V1ItO2yiH4IPwXnqmK3RHnyJZN6H1njR2vA6uYUXd1fMSmvUerNOY41NLzfGvHXFkfIhZfgfg4Fs1YudaTr3EqIbHgvphrup25cqep5jDP+0rug4EZ13baW/pOczyraEPvoqyd9tN2XlWwjnyOAIV107F/rd9/dtgRx2ZfNcoZ6ZpdU7EUTgSn8A/7fvrkg8sz2ewz/oCNIB96ObOLbytXerDz/EF/AVn8rTmLrsUhgAAAABJRU5ErkJggg=='); background-size: cover; display: block;"></span>
+  <img class="gatsby-resp-image-image" alt="AWS Certified Machine Learning Engineer" title="" src="/static/987925aef8bb6662bca2315a8ebf6054/69538/AWS-Certified-Machine-Learning-Engineer.png" srcset="/static/987925aef8bb6662bca2315a8ebf6054/69538/AWS-Certified-Machine-Learning-Engineer.png 160w" sizes="(max-width: 160px) 100vw, 160px" style="width:100%;height:100%;margin:0;vertical-align:middle;position:absolute;top:0;left:0;" loading="lazy" decoding="async">
+  </a>
+    </span></span>
   <span style="width: 100px"><span class="gatsby-resp-image-wrapper" style="position: relative; display: block; margin-left: auto; margin-right: auto; max-width: 600px; ">
       <a class="gatsby-resp-image-link" href="/static/af1eddb11122ad2866051642d1453556/0a47e/aws-certified-solutions-architect-associate.png" style="display: block" target="_blank" rel="noopener">
     <span class="gatsby-resp-image-background-image" style="padding-bottom: 100%; position: relative; bottom: 0; left: 0; background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAACXBIWXMAAAsTAAALEwEAmpwYAAADb0lEQVR42oWV/UtTURjHr4HQy09RaG+/RETYC2UQQfTygz+ERVZ/QEVREYRBEUViWEpRpoUFEVhQWalLlMosM7UXE3W2zZdSd33ddre2ezedzs3t7t5v55y9uKHZgedyOed5Pud5Oec5HDfbyMG8HCLsf333sj254uPd18VibnVnMltma+H1OQeQEAVxzQvWnnecu6IZt5nHAZMbuFzqtq3JtGVyXOP8KJjYzEaKAXHc4mPm/SeK3fpWE+hQiShhUZtHgGOPxnSLj1rTowExb2PBkV32mzbuy3dWlbf51YBKOIpf8QdkNRAIwOubQlBRVCiSElAVlLX61fRbYiW3d2RDHIOO5aeFpduzHXcKP3gmnT7mldKi1akPn7yEprIaJa9eo+xNA+yGCkCTAoUvZV67fCoKayY926468lectSyJAlOzHAVdEgMFwqGhTdeBz41NTBq+NqGprRNDho9A0xEow+9CSsRnamMQga1Z0u0ocFees8jDFCArauhHlJwYNllgsdrADwyhXd+JvgEzeJ6HSRDDOKYsjxPszlznvWlgrlg0EQLJahgo2OzQdXRjaMSMPn4AdlFC168eAu6CRbCG8hJSlt1BChSngeScFXkiQKpIdg4GQ0FFhhrZKW4OMR7OClRk+u3pNaJVq0OvkUdzixYDg8Mkl99I6IPMy47OX5Ccrgh3LiAY0GQWCOA7Wtp0qKmth/annhVGqzOg/st3NH77AWP/YJin/B/o9fqYgW9qCk6XC/3EQ5o3Wig65yD5nJz0/tvD2KLQDzV+9kKD2vovqGv4iqcvyvGm+iNKNVWoqHqHt+9rWRQR4IyixB4bypVlGVN+PylMME7oPC2Wn9wccmugxni4K891Nwrcmi0W/h6NP9g0bLPFSkIehUhCtNtFFqrZIjBgJIHUppvUJzVLuhMFJp37k7zjmuPBgzqvzx3SVQhI/d3Do6ePRy8VYz94klc9qfCY281Ol9sP3P/k9e64JhYln7ElzWgOiRmW1IwCqaZKT0Ka9kBlPSF0KxiIrlXqAjhQ4KpOPGjZMqM5xPdBLiHpuHD4VPFYd7t5ZvvSkrmTxWNdSSeEQ1R37r4YC042LEq5YLt09fWEZCMVs04A2RUex7oL9ovccmHhfxrsHE/AJuOqtJtSSdoN6Tm32bQyCsqZ/Qn4C6GJ+Qrbj7NbAAAAAElFTkSuQmCC'); background-size: cover; display: block;"></span>
-  <img class="gatsby-resp-image-image" alt="aws certified solutions architect associate" title="" src="/static/af1eddb11122ad2866051642d1453556/0a47e/aws-certified-solutions-architect-associate.png" srcset="/static/af1eddb11122ad2866051642d1453556/4edbd/aws-certified-solutions-architect-associate.png 175w,
+  <img class="gatsby-resp-image-image" alt="AWS Certified Solutions Architect Associate" title="" src="/static/af1eddb11122ad2866051642d1453556/0a47e/aws-certified-solutions-architect-associate.png" srcset="/static/af1eddb11122ad2866051642d1453556/4edbd/aws-certified-solutions-architect-associate.png 175w,
 /static/af1eddb11122ad2866051642d1453556/13ae7/aws-certified-solutions-architect-associate.png 350w,
 /static/af1eddb11122ad2866051642d1453556/0a47e/aws-certified-solutions-architect-associate.png 600w" sizes="(max-width: 600px) 100vw, 600px" style="width:100%;height:100%;margin:0;vertical-align:middle;position:absolute;top:0;left:0;" loading="lazy" decoding="async">
   </a>
     </span></span>
+  <span style="width: 100px"><span class="gatsby-resp-image-wrapper" style="position: relative; display: block; margin-left: auto; margin-right: auto; max-width: 600px; ">
+      <a class="gatsby-resp-image-link" href="/static/7a42e742bd590b3c2b497dff7b11f9a2/0a47e/AWS-Certified-Developer.png" style="display: block" target="_blank" rel="noopener">
+    <span class="gatsby-resp-image-background-image" style="padding-bottom: 100%; position: relative; bottom: 0; left: 0; background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAACXBIWXMAAAsTAAALEwEAmpwYAAAEcUlEQVR42o2VC1BUZRTHqUlGSVF5CssCe3dlXZZld2HZvXfv7gIiiIguWpCZNTRk8bBxmywKakRSBjVYahhFzEcpPQwaY0uZtEyLJIXRWpkRHxnEY0hGBN2H3L3824uG4KM8M2fmzHe++c1/vvnO/3h4PCAAPLZ+PR7nahKYpitzFnPJ1dwZ1+PuePxvTABxtX6706gzOazxywFDBqBba7Mm1NqMHndgY3cfBr4Nut2kG27J6UKHRZvlgiqOhTLaxqpibrAKtQuKjBGQhcOWxAbI76i4K2KCtDEQdRYBulKHWZc9YtcmAisznWxRsXPUnXg+ZwSVeTWj5dm1rJS8AdWqfjtVct2cfAkBExljkXkAnrqttnw619ljSAdozS1Wo7GzeQW3sHGTHYVvDWHNazexfV0NKvLNEEX9wUplVlaW2AnFi1091Obh/Mxz8BwHaisduQkvcCDGRZE2lqIdoGgb0tKHkbViEEuM/ch5pR8LjX1IzeiCNPZ3RMjbIIpsZglxs0u27C9oK22540D9FpfJsBCgSDuj1TlA629Cq7uG+SlXsXBxH/RuJbr5lxGf3AF6vhXSmFaIFSchlJ1AmLiJEapbQJbbTONAunzEZFjsBmrsDKkdgj5+AAlJ/W5QNyjDFZCGC1DR7YjV/gYl1YpYugUytRsm/Q68uY2MgGwGWTY0GahPA9TqQUal+RukrheR8isg5nUgXGwFITkDofQ0goifEUgcw2x+EwIE34IvsWCO8EsmVH3sXqDTpE0dhTKmj1GR3ajePohde6/hvbI+vP1uF96v6saOXT14850OFG84j8rqS8hZcwqBEfXwF+xneHFNUJcNTgZqUhyQKzsZhfoysld3wvTGn1hdcNGd5/FSwTm8uu4cikraUVxqxdrCVqQ+dQQ+gv3wDd/NzIltvB+oWjAEmeICI41pBxF5FvyIUwiZ24xg0Y+YQxyBb+g38Ce+hp+gHl5B++HN/xi+wj2Yyd/G+Cvr7wXaTDFJVyGJtjIS5RnI4k5DEvsLIpTHIZIfBSE7DKHcgrCoBoRIv0CwZB94kXsxS1CD6Twz4yuvg3rjwGSF0fouiKNOM0TUSWiTfsXTq9pgfKYFxhXNWLriBAyLmpCQfgjx6Y1Iy7KAJ90Jr5AqTAsuZ7wltZMVarfacpUZAxBJWlz8ud+zmsSfsGh5MxLSfsCCpUfdoMNQJx0EldwAZfyniEuqQ8C8angGbmKf8CtxBcQfBLn1+t2PzY0NtfF6vmzlxR4R1YbA8EbWN6ye9REccL/VPszg78b0kFq3mmpM5VVhSsBmdopfKTsjcgdCMw73qDb0Th69fwd7mXvQYwt7zeIlrXae7BD8wvayfsI9oz7ETswUbIN3WNXo1MAy9kniQwQlf2WPfr3DvKrvAeZwr30lfg65LK/DEpp4BLPCP+IenvUK2sJO5VXAn/4M4pfbLCn/bV/3GyznyPoPnMaI51qsvjF1mK34BMJnj1u5MzyKwT5sBVS4bV9Z1F3MZcUjrIB/AAHdstLOLYgFAAAAAElFTkSuQmCC'); background-size: cover; display: block;"></span>
+  <img class="gatsby-resp-image-image" alt="AWS Certified Developer Associate" title="" src="/static/7a42e742bd590b3c2b497dff7b11f9a2/0a47e/AWS-Certified-Developer.png" srcset="/static/7a42e742bd590b3c2b497dff7b11f9a2/4edbd/AWS-Certified-Developer.png 175w,
+/static/7a42e742bd590b3c2b497dff7b11f9a2/13ae7/AWS-Certified-Developer.png 350w,
+/static/7a42e742bd590b3c2b497dff7b11f9a2/0a47e/AWS-Certified-Developer.png 600w" sizes="(max-width: 600px) 100vw, 600px" style="width:100%;height:100%;margin:0;vertical-align:middle;position:absolute;top:0;left:0;" loading="lazy" decoding="async">
+  </a>
+    </span></span>
+  <span style="width: 100px"><span class="gatsby-resp-image-wrapper" style="position: relative; display: block; margin-left: auto; margin-right: auto; max-width: 160px; ">
+      <a class="gatsby-resp-image-link" href="/static/2454c5bd51c7dd41e8147b2051729740/69538/AWS-Certified-SysOps-Administrator.png" style="display: block" target="_blank" rel="noopener">
+    <span class="gatsby-resp-image-background-image" style="padding-bottom: 100%; position: relative; bottom: 0; left: 0; background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAACXBIWXMAAAsTAAALEwEAmpwYAAAEgklEQVR42o2VfVDTdRzHqStRTCMZoIADNx7kYWywp9+238YGiGvyqPJwoZ2ef8jstHGiRJxpmikPY/iQmGbRGXSXcpALtMiM0uRM7HLVCdO6GMsUi0AYY7/99u439RSfys/d5+5z3+/3Xvf+fB/eXx+fRwSApzZvxtPemgCmkdXOSm96a++Yd867xud/YxLIWysPOHNIw7glZTGgygVIg8Oift+Z43MHdmvt48C3QbcnFS0TfEXFhFle4IZITCMpcYwWCW/SAokbglwXiPIRs8YM/h0V90RMknYLlHoRweS2CRO50uVQaICipU66/DWnp6LCiWUrXTDqGzw7VrxLxxOjEC+75pBtHTFlXUHwZMat0Hb0+ZIml54scdpViwCFdIKWSh10iX4CW7c5sLF8GK+UjqKhrAHGNXWITPiVjudZ6ETN7xCs7LeTteN6bYfH9y5QWe8q0bwMyKWUW0Y4aJliHDLFGHSZI8gv+htZudexavU1ZGT9AW2uDTzRRUTzexAZd4bmxJxx8xbbIK8fK7kLJGvcpSotwMAoOTkOUjkKOTmE1AWD0GVfhSqtH3L1ZWgW9kKV/hPihT2IEZwFl9cFdsznFFfSDXnVzdJ7CqtdBm+rMqmDIuTDSEn9C+q0ayDVjJrky+AJL4FQ/YL5/AvgxHeDT5xFguQbRMR3IizKTHFk34HYOWy4D6jUARLJECUmriNBYIcy1YZa0w2sLR3AxkobjLvsWFdmxfqKXsQJv0ZI1HGw4z7DbO4Rii099TBQofVAKPyTEhEDEMl+YxRZsW59P3bU2LB2vRWvlvVi81t9MJRbwCM6MSf6UwRHHkUQp4kKFZ94AGh0GcQLnMxB2KjDTf9gz75B1NZfZQD92NMwgNe3XEblm33YurMXK/TnUbf3Eso29WDDpu8RkXCYChS0gai+T6HTIEofRrLYSi0puoLC5X3Iyf8ZuYU/YmnxD8gqOIecorPIyOvCwryT0OV3Ij23HUpdK2ZF7KdYgiOMwqF7QAUDTE4bxHyeheLEXUAk7xyz+acRHnsKYdFfICS6nWmxDbOjjiKQ2wz/8EbM4h6CX+g+TA81UQGCJkgmA8kaZ2miqh8xvPMUN6EbirRzWFLcg+zCbmQXnWEUdkH14gmoM9uRknkMugIzwhLew/S5u+AXUkXNjDsAyY4bk65N/XhJUt4NRMZ2u9lRJ2mJ5lto805DrfsKadlfIkV3HGJNK4j0FiSlNEOc1oSg+XsxJXg7/QxriztI3QZ53UjJpKfn8ZXvHNPziq32KFkPZkccowMiWuiAeZ/An/0RZsz9gMmDmBbyDqaG7sKUoCr6WdY2ekbcfrDzOuzi7YPM04PvQ+aQxZiDsOKqKSb7vCOU1wFWeCPNimz0zOIcxPPz9mFmeL1navDb9HTObszJaHUkbrCaVj3KHB60r4wW8Plres1sdSf8Iw7huVAT7Tenmp4WZkSg4mPErr5gXvTf9vWwwXodWbmXyole3m1hJTfjhaQPwX2py+Idw5MY7OO+ACNj+8I3Biq9aXyCL+BfXPG81x4SbWoAAAAASUVORK5CYII='); background-size: cover; display: block;"></span>
+  <img class="gatsby-resp-image-image" alt="AWS Certified SysOps Administrator Associate" title="" src="/static/2454c5bd51c7dd41e8147b2051729740/69538/AWS-Certified-SysOps-Administrator.png" srcset="/static/2454c5bd51c7dd41e8147b2051729740/69538/AWS-Certified-SysOps-Administrator.png 160w" sizes="(max-width: 160px) 100vw, 160px" style="width:100%;height:100%;margin:0;vertical-align:middle;position:absolute;top:0;left:0;" loading="lazy" decoding="async">
+  </a>
+    </span></span>
+  <span style="width: 100px"><span class="gatsby-resp-image-wrapper" style="position: relative; display: block; margin-left: auto; margin-right: auto; max-width: 660px; ">
+      <a class="gatsby-resp-image-link" href="/static/6cd6caa60d342116e77ab1ba98d04eea/1f083/AWS-Industry-Healthcare-Intermediate.png" style="display: block" target="_blank" rel="noopener">
+    <span class="gatsby-resp-image-background-image" style="padding-bottom: 100%; position: relative; bottom: 0; left: 0; background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAACXBIWXMAAAsTAAALEwEAmpwYAAAEI0lEQVR42m2U/U9bVRjHL0ydxjQx8V8wMfEfMPof+IP8YpZMfzK6bMLAmBiMOku3CcqaLZv8wIRRKG+lvIjy0lugTRmMDpoiW98GrSPAFDdeC23vpe2953x9zi3IBpzke8+Tc57nc59zznOOJElSkVRoL3/wxtu1VZ9U7Fz/yqJbK8x5a7lZqy374VClQmbt5y/M+Wtll7VLH1XsiBgRu88oknrOnDklrIrX362JywFQ0zljOLFxUp6UI1NlwtZDzhl8+dp71YJhsViK98HSqyOfXo+JGC3LWE5hyGZ0aCoQC/2FgD+Eh7MLiD54jL1tILWmI/VMiP6cBYbPWhPEOHUAk96XJNPsN63LBjDHuE5ZaHuUjg44uwbQdKcTLS3dGPzdA2WbQSWosgkB5YyA0xeb/yXMK/8DSwgYqWxfEUCmgZEgoIyWFg0nMO1/gOBMBBO+AHbW95DbBdQtjswaAclvrrT1ReBnBFyodBhAXdOZlmciUxJHTtXxz8oa/l5eQz7DkU1xKEkGZYshva5xTqsIl3UcB8Yru1b2t944EU5fpnOIACFxIHpW7HEhc32PzmZX58IverHzODDxbY8BHBp2M1tLO+QRL2wtnZDdXkxM3sevDXa4hr2w27tRV9eELscAXAM+ce6IlTtPyLDKbQDtbQ5mvVGH+gYbbPYO3GluQ0/fAFrsXXC5Pbg74cetXxohu8bhHZkygOGvh44C3zTN1/gN4OrqU/Z4cQnh6CP4pwMIhWPUBzE7+xDRSJyUwHxsEcFAGE8WnxnAiPneUWCJKXYjbABnZoKsp+8PjHp8aHd0o8PRA2dvP2YCf6Lvt0HIshcjbh9sNgemJoIGMFQTOlo210yP6lcMYCajsEwmg3QqBVVVkU6noSgKFBrLpKlPq0glaT6pYndTLSz55hMCvvM8cMoUsSULdcjAuDhRnSGXo7ul68jn84aEvafmqJx0o07zCitkeDtJQMvzwA1TxKEtF4CFixyJxdDd3w/f5CTksTF4fD6yJ9De5URsfgGFa6oXgPY8AaOHwEoJprlWvsTpr9k0eC5DN2FXQ2o7h+S6gvR2FspOHjsbtNwtYevIpcgnSSVK933WxlclCYdA0Yaq2Nj9W1SHV6ENXmFMrmYYvqrBXcMNDf/IIdeAxMhHx+BlxoWv/ybgqoJHMCChiJ4cGE/OwE94q8/KJj0NQGftU/79OZlZSr380nkZ330+BPOFUVwpG0d1+T1uvuBhTusa9zYCIkbEFp4vFL+QJSAVjTrxoaNpc9bZtoHejg1uq19mrY2rvKl+iTffXmHdbZu8t3MTzubdoNuBEvGo0jYWSUebGDyYoP6lcT8+HplE+O4c4A2ACwlbjNHcWeFzNO7ERpPFBw5ygp92RfRzchxxOc4WDDuROH0AOrZESZL+Ax26IIZZdEIpAAAAAElFTkSuQmCC'); background-size: cover; display: block;"></span>
+  <img class="gatsby-resp-image-image" alt="AWS Industry Healthcare Intermediate" title="" src="/static/6cd6caa60d342116e77ab1ba98d04eea/1f083/AWS-Industry-Healthcare-Intermediate.png" srcset="/static/6cd6caa60d342116e77ab1ba98d04eea/4edbd/AWS-Industry-Healthcare-Intermediate.png 175w,
+/static/6cd6caa60d342116e77ab1ba98d04eea/13ae7/AWS-Industry-Healthcare-Intermediate.png 350w,
+/static/6cd6caa60d342116e77ab1ba98d04eea/1f083/AWS-Industry-Healthcare-Intermediate.png 660w" sizes="(max-width: 660px) 100vw, 660px" style="width:100%;height:100%;margin:0;vertical-align:middle;position:absolute;top:0;left:0;" loading="lazy" decoding="async">
+  </a>
+    </span></span>
 </p>
-<h1>Skill</h1>
+<h1>Skills</h1>
 <h3>Familiar with</h3>
 <ul>
-<li>Web developing:Javascript <code>Typescript</code>/HTML/CSS <code>Styled-Component</code>/Webpack/NodeJS</li>
-<li>DevOps: Docker/Kubernetes/Terraform/iptables/Consul/HAproxy/AWS</li>
-<li>Web framework: React/Vue/NestJS</li>
-<li>Data engineering: AWS Athena, AWS DynamoDB</li>
+<li>AI/Agent: Strands Agents/Claude Code Plugin/OpenClaw Plugin/LangChain/Amazon Bedrock/MCP/SSE</li>
+<li>Web development: TypeScript/JavaScript/Python/HTML/CSS/Webpack/NodeJS</li>
+<li>DevOps: AWS/Docker/Kubernetes/Terraform</li>
+<li>Web framework: React/Next.js/FastAPI/Vue/NestJS</li>
+<li>Data engineering: AWS Athena/AWS DynamoDB</li>
 </ul>
 <h3>Know about</h3>
 <ul>
-<li>Web: Ruby on Rails/GraphQL/Golang/SEO</li>
-<li>DevOps: Jenkins <code>Groovy</code>/Service Mesh/AWS/Git Ops</li>
-<li>K8S related: Istio/EFK/Helm/ArgoCD</li>
-<li>Data engineering: AWS Glue(Spark), MySQL</li>
+<li>Web development: Ruby on Rails/GraphQL/Golang/SEO</li>
+<li>DevOps: Jenkins/Service Mesh/Istio/Helm/ArgoCD/GitOps</li>
+<li>Data engineering: AWS Glue(Spark)/MySQL</li>
 <li>Machine learning: PaddlePaddle/CNN/SDMG-R</li>
 </ul></article></div></div></main></div><footer class="footer-sc-1ejc99w-0 fvBZqb"><div class="container"><span class="unit">© <!-- -->2026<!-- -->, <!-- -->Built with<!-- --> <a href="https://www.gatsbyjs.org">Gatsby</a></span><span class="unit">Created by Felix</span><span class="unit"><a target="_blank" href="https://github.com/ChenNima">Github</a></span><span class="unit"><span class="oi oi-envelope-closed"></span> <!-- -->Email:<!-- --> <a href="mailto:fennu637@sina.com">fennu637@sina.com</a></span></div></footer></div><div id="gatsby-announcer" style="position:absolute;top:0;width:1px;height:1px;padding:0;overflow:hidden;clip:rect(0, 0, 0, 0);white-space:nowrap;border:0" aria-live="assertive" aria-atomic="true"></div></div><script id="gatsby-script-loader">/*<![CDATA[*/window.pagePath="/resume-en";/*]]>*/</script><!-- slice-start id="_gatsby-scripts-1" -->
           <script

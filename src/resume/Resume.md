@@ -1,6 +1,6 @@
 ---
 path: "/resume"
-date: 2019-09-10T10:23:40+08:00
+date: 2026-03-07T10:00:00+08:00
 title: "个人简历"
 type: "resume"
 lang: "zh"
@@ -14,11 +14,27 @@ lang: "zh"
  - LinkedIn：[https://www.linkedin.com/in/yifei-chen-990199110/](https://www.linkedin.com/in/yifei-chen-990199110/)
  - 邮箱：fennu637@sina.com<span class="d-none"> / 手机：18918561263</span>
 
+# 开源项目
+
+- [Chorus](https://github.com/Chorus-AIDLC/chorus)：基于[AI-DLC](https://aws.amazon.com/blogs/devops/ai-driven-development-life-cycle/)方法论的Agent harness框架，采用Reversed Conversation模式（AI提案，人类审核），让AI Agent与人类协作完成从Idea到Proposal到Task的产品交付流程
+  - [Claude Code插件](https://github.com/Chorus-AIDLC/Chorus/tree/main/public/chorus-plugin)：通过Hooks机制实现Agent Teams (Swarm)场景下Sub-Agent的自动Session管理与上下文注入
+  - [OpenClaw插件](https://www.npmjs.com/package/@chorus-aidlc/chorus-openclaw-plugin)：通过SSE + MCP双通道架构实现AI Agent 24小时在线自动感知任务并推进产品交付流程
+
 # 工作经历
 
-## SAP Labs China （ 2016年10月 ~  ）
+## Amazon Web Services （ 2023年6月 ~ 至今 ）
+
+### **Solutions Builder**/<small>AWS Solutions</small> （ 2023年6月 ~ 至今 ）
+设计并开发基于AWS的行业解决方案，专注于医疗健康与AI Agent领域
+
+- 解决方案开发:
+  - 开发MCS (Marketing & Commercial Set)，基于[Strands Agents](https://strandsagents.com/latest/)和`Amazon Bedrock`的医药销售AI知识管理与培训助手。使用`Amazon Neptune`+`OpenSearch Serverless`构建GraphRAG知识图谱，支持STAR案例方法论、AI驱动的销售策略推荐与模拟训练
+  - 开发[Medical Deep Insights](https://mp.weixin.qq.com/s/ony8yF8s_gP7NAcLeU9r6w)，基于[Strands Agents](https://strandsagents.com/latest/)的医疗内容生成助手。支持通过YAML配置和AI编程助手(Skill)快速生成Agent与Tool，集成PubMed/临床试验/专利检索等15+工具，通过MCP协议扩展外部能力，部署于`Bedrock AgentCore`
+  - 开发[Medical Insights Hub](https://www.amazonaws.cn/en/solutions/industry/health/medical-insights-hub/)，基于AWS的医疗内容生成解决方案。基于GenAI实现专业医疗文档翻译，通过`OpenSearch Percolate`支持百万级术语表匹配；支持对接PubMed等外部知识库协作生成医疗内容，并提供Word插件集成
+
+## SAP Labs China （ 2016年10月 ~ 2023年6月 ）
 架构师，Web应用(前后端)开发，DevOps以及数据工程师。
-### **Architect**/<small>SAP Concur</small> （ 2021年1月 ~  ）
+### **Architect**/<small>SAP Concur</small> （ 2021年1月 ~ 2023年6月 ）
 设计并开发SAP Concur eFapiao，一个基于`NodeJS`和微信小程序的发票自动识别，校验解决方案
 
 - DevOps:
@@ -35,59 +51,43 @@ lang: "zh"
   - 部署基于`PaddleOCR`的OCR模型，辅助标注发票图片识别不准确的字段
   - 训练基于`SDMG-R`模型的关键信息提取模型，实现从图片中提取发票相关的关键字段
 
-### **Senior DevOps**/<small>SAP Jam Collaboration</small> （ 2020年3月 ~ 2020年12月 ）
+### **Senior DevOps**/<small>SAP Jam Collaboration</small> （ 2019年3月 ~ 2020年12月 ）
 
-SAP Jam Collaboration(以下简称Jam)是一个基于`Ruby on Rails`后台/`React`，`BackboneJS`为前端的团队协作工具。
+SAP Jam Collaboration是一个基于`Ruby on Rails`/`React`的团队协作工具。
 
-
-- 带领Devops团队改造现有运维架构，包括引入`Consul`与原有的`HAproxy`配合实现动态服务注册/发现和`Service Mesh`，在传统数据中心缺乏Kubernetes基础设施支持的情况下实现服务发现；使用`Prometheus`改造原有的日志系统与监控系统。
-- 与跨国团队合作，实现多个时区不间断地共同支持DevOps工作
-
-### **DevOps**/<small>SAP Jam Collaboration</small> （ 2019年3月 ~ 2020年3月 ）
-
-- 将使用Docker部署在自有数据中心项目迁移至AWS上的`Kubernetes`环境
-- 编写`Terraform`用以管理集群基础设施
-- 将应用的各个微服务拆分为独立的`Helm Charts`并分别部署
-- 使用`ArgoCD`实现`GitOps`流程；部署`Istio` Service Mesh并实现金丝雀部署，流量监控等功能。
+- 带领DevOps团队将项目从自有数据中心迁移至AWS `Kubernetes`环境，使用`Terraform`/`Helm`/`ArgoCD`管理基础设施与GitOps流程
+- 引入`Consul`+`HAproxy`实现服务发现，部署`Istio` Service Mesh实现金丝雀部署与流量监控
+- 与跨国团队协作，支持多时区不间断DevOps运维
 
 ### **Full Stack Developer**/<small>SAP Jam Collaboration</small> （ 2017年10月 ~ 2019年3月 ）
 
-包括前端以及后端（`Ruby/NodeJS/Golang`）开发。
+- 前端：编写`BackboneJS`→`React`/`TypeScript`迁移抽象层，实现新老代码共存
+- 后端：开发基于`NodeJS`的SSR服务、基于`Golang`的多存储介质文件服务（S3/Azure Blob/NAS）
 
-- 前端:
-  - 编写抽象层将`BackboneJS`和`React`有机地结合在一起，实现新老代码的分隔维护与开发
-  - 不影响老代码的情况下基本实现新功能向`React`/`Typescript`/`Styled-Component`迁移的工作。
+### **Frontend Developer**/<small>SAP Jam Community</small> （ 2016年10月 ~ 2017年10月 ）
 
-- 后端:
-  - 维护`Ruby on Rails`的后台服务
-  - 开发基于NodeJS的微服务，包括实现React组件的`服务端渲染`服务以及基于`Puppeteer`的`SEO`预渲染服务
-  - 开发基于`Golang`的文件存储微服务。主要提供一套通用接口，实现将文件存储至`NAS文件系统`，`AWS S3 Bucket`，`Azure Blob Storage`等存储介质。
-
-### **Frontend Developer**/<small>SAP Jam Community</small> （ 2016年10月 ~  2017年10月 ）
-SAP Jam Community是一款基于`EmberJS`/`Vue`和`Ruby on rails`的社交平台。在这段工作中主要担任前端开发，除编写`EmberJS`组件外，还使用`Vue`为项目编写前后端分离的管理工具。
-
-## CareerBuilder China （ 2016年4月 ~  2016年10月 ）
-
-### **Intern Web developer**
-
-编写基于`AngularJS`/`Ruby on Rails`/`NodeJS`的web服务
+基于`EmberJS`/`Vue`/`Ruby on Rails`的社交平台前端开发
 
 # 认证
 <p class="d-flex justify-content-between">
-  <span style="width: 100px"><image style="width: 100px" src="./aws-certified-solutions-architect-associate.png" /></span>
+  <span style="width: 100px"><image style="width: 100px" src="./AWS-Certified-Machine-Learning-Engineer.png" alt="AWS Certified Machine Learning Engineer" /></span>
+  <span style="width: 100px"><image style="width: 100px" src="./aws-certified-solutions-architect-associate.png" alt="AWS Certified Solutions Architect Associate" /></span>
+  <span style="width: 100px"><image style="width: 100px" src="./AWS-Certified-Developer.png" alt="AWS Certified Developer Associate" /></span>
+  <span style="width: 100px"><image style="width: 100px" src="./AWS-Certified-SysOps-Administrator.png" alt="AWS Certified SysOps Administrator Associate" /></span>
+  <span style="width: 100px"><image style="width: 100px" src="./AWS-Industry-Healthcare-Intermediate.png" alt="AWS Industry Healthcare Intermediate" /></span>
 </p>
 
 # 技能
 
 ### 熟悉
-- Web开发: Javascript `Typescript`/HTML/CSS `Styled-Component`/Webpack/NodeJS
-- DevOps: Docker/Kubernetes/Terraform/iptables/Consul/HAproxy/AWS
-- Web框架: React/Vue/NestJS
-- 数据工程: AWS Athena, AWS DynamoDB
+- AI/Agent: Strands Agents/Claude Code Plugin/OpenClaw Plugin/LangChain/Amazon Bedrock/MCP/SSE
+- Web开发: TypeScript/JavaScript/Python/HTML/CSS/Webpack/NodeJS
+- DevOps: AWS/Docker/Kubernetes/Terraform
+- Web框架: React/Next.js/FastAPI/Vue/NestJS
+- 数据工程: AWS Athena/AWS DynamoDB
 
 ### 了解
 - Web开发: Ruby on Rails/GraphQL/Golang/SEO
-- DevOps: Jenkins `Groovy`/Service Mesh/AWS/Git Ops
-- Kubernetes相关: Istio/EFK/Helm/ArgoCD
-- 数据工程: AWS Glue(Spark), MySQL
+- DevOps: Jenkins/Service Mesh/Istio/Helm/ArgoCD/GitOps
+- 数据工程: AWS Glue(Spark)/MySQL
 - 机器学习: PaddlePaddle/CNN/SDMG-R
