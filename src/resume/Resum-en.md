@@ -16,9 +16,9 @@ lang: "en"
 
 # Open Source Projects
 
-- [Chorus](https://github.com/Chorus-AIDLC/chorus): An Agent harness framework based on [AI-DLC](https://aws.amazon.com/blogs/devops/ai-driven-development-life-cycle/) methodology, adopting Reversed Conversation mode (AI proposes, humans review), enabling AI Agents and humans to collaborate on product delivery from Idea to Proposal to Task
-  - [Claude Code Plugin](https://github.com/Chorus-AIDLC/Chorus/tree/main/public/chorus-plugin): Automatic Session management and context injection for Sub-Agents in Agent Teams (Swarm) scenarios via Hooks mechanism
-  - [OpenClaw Plugin](https://www.npmjs.com/package/@chorus-aidlc/chorus-openclaw-plugin): SSE + MCP dual-channel architecture enabling AI Agents to autonomously detect tasks and drive product delivery 24/7
+- [Chorus](https://github.com/Chorus-AIDLC/chorus): An Agent harness framework based on [AI-DLC](https://aws.amazon.com/blogs/devops/ai-driven-development-life-cycle/) methodology that provides Skills, MCP toolsets and task management environment for AI Agents, driving autonomous end-to-end software engineering workflows from Idea → design → task breakdown → implementation → verification
+  - [Claude Code Plugin](https://github.com/Chorus-AIDLC/Chorus/tree/main/public/chorus-plugin): Multi-Agent orchestration via Hooks and custom Agent mechanisms, with automatic context injection and independent Agent spawning for task review and quality verification
+  - [OpenClaw Plugin](https://www.npmjs.com/package/@chorus-aidlc/chorus-openclaw-plugin): SSE + MCP dual-channel architecture enabling AI Agents to autonomously detect engineering tasks and drive delivery 24/7
 
 # Working Experience
 
@@ -27,10 +27,11 @@ lang: "en"
 ### **Solutions Builder**/<small>AWS Solutions</small> （ 2023.6 ~ Present ）
 Design and develop AWS-based industry solutions, focusing on healthcare and AI Agent domains
 
-- Solution Development:
-  - Developed MCS (Marketing & Commercial Set), an AI-powered knowledge management and training assistant for pharmaceutical sales teams based on [Strands Agents](https://strandsagents.com/latest/) and `Amazon Bedrock`. Built GraphRAG knowledge graph with `Amazon Neptune` + `OpenSearch Serverless`, supporting STAR case methodology, AI-driven sales strategy recommendation and simulation training
-  - Developed [Medical Deep Insights](https://mp.weixin.qq.com/s/ony8yF8s_gP7NAcLeU9r6w), a medical content generation assistant based on [Strands Agents](https://strandsagents.com/latest/). Supports rapid Agent and Tool generation via YAML configuration and AI coding assistant (Skill), integrates 15+ tools including PubMed/clinical trials/patent search, extends capabilities through MCP protocol, deployed on `Bedrock AgentCore`
-  - Developed [Medical Insights Hub](https://www.amazonaws.cn/en/solutions/industry/health/medical-insights-hub/), an AWS-based medical content generation solution. GenAI-powered professional medical document translation with `OpenSearch Percolate` supporting million-level glossary matching; supports integration with external knowledge bases like PubMed for collaborative medical content generation, with Word plugin integration
+- AI Agent Solutions:
+  - Developed MCS (Marketing & Commercial Set), a multi-Agent knowledge management platform based on [Strands Agents](https://strandsagents.com/latest/) and `Amazon Bedrock`. Built GraphRAG knowledge graph with `Amazon Neptune` + `OpenSearch Serverless` for graph-based precise knowledge Q&A and strategy recommendation
+  - Developed [Medical Deep Insights](https://mp.weixin.qq.com/s/ony8yF8s_gP7NAcLeU9r6w), a configurable Agent platform based on [Strands Agents](https://strandsagents.com/latest/). Rapid Agent and Tool generation via YAML configuration, integrates 15+ external tools, extends capabilities through MCP protocol, deployed on `Bedrock AgentCore`
+- Data & Search:
+  - Developed [Medical Insights Hub](https://www.amazonaws.cn/en/solutions/industry/health/medical-insights-hub/), featuring million-level glossary real-time matching via `OpenSearch Percolate`, GenAI-powered professional document translation, with Word plugin integration
 
 ## SAP Labs China （ 2016.10 ~ 2023.6 ）
 Architect, Web development (Frontend/backend), DevOps and data engineer.
@@ -60,14 +61,10 @@ SAP Jam Collaboration is a collaboration tool based on `Ruby on Rails`/`React`.
 - Introduced `Consul`+`HAproxy` for service discovery, deployed `Istio` Service Mesh for canary deployment and traffic monitoring
 - Collaborated with international teams, supporting around-the-clock DevOps operations across multiple timezones
 
-### **Full Stack Developer**/<small>SAP Jam Collaboration</small> （ 2017.10 ~ 2019.3 ）
+### **Full Stack Developer**/<small>SAP Jam</small> （ 2016.10 ~ 2019.3 ）
 
-- Frontend: Built `BackboneJS` → `React`/`TypeScript` migration abstraction layer, enabling old and new code coexistence
-- Backend: Developed `NodeJS`-based SSR service, `Golang`-based multi-storage file service (S3/Azure Blob/NAS)
-
-### **Frontend Developer**/<small>SAP Jam Community</small> （ 2016.10 ~ 2017.10 ）
-
-Frontend development for a social platform based on `EmberJS`/`Vue`/`Ruby on Rails`
+- `NodeJS`-based SSR service, `Golang`-based multi-storage file service (S3/Azure Blob/NAS)
+- `BackboneJS` → `React`/`TypeScript` frontend framework migration
 
 # Certifications
 <p class="d-flex justify-content-between">

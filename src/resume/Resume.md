@@ -16,9 +16,9 @@ lang: "zh"
 
 # 开源项目
 
-- [Chorus](https://github.com/Chorus-AIDLC/chorus)：基于[AI-DLC](https://aws.amazon.com/blogs/devops/ai-driven-development-life-cycle/)方法论的Agent harness框架，采用Reversed Conversation模式（AI提案，人类审核），让AI Agent与人类协作完成从Idea到Proposal到Task的产品交付流程
-  - [Claude Code插件](https://github.com/Chorus-AIDLC/Chorus/tree/main/public/chorus-plugin)：通过Hooks机制实现Agent Teams (Swarm)场景下Sub-Agent的自动Session管理与上下文注入
-  - [OpenClaw插件](https://www.npmjs.com/package/@chorus-aidlc/chorus-openclaw-plugin)：通过SSE + MCP双通道架构实现AI Agent 24小时在线自动感知任务并推进产品交付流程
+- [Chorus](https://github.com/Chorus-AIDLC/chorus)：基于[AI-DLC](https://aws.amazon.com/blogs/devops/ai-driven-development-life-cycle/)方法论的Agent harness框架，为AI Agent构建Skills、MCP工具集与任务管理环境，驱动Agent自主完成从Idea→方案设计→任务拆分→代码实现→验收的端到端软件工程工作流
+  - [Claude Code插件](https://github.com/Chorus-AIDLC/Chorus/tree/main/public/chorus-plugin)：通过Hooks与自定义Agent机制实现多Agent协作，自动注入Agent上下文并启动独立Agent进行任务审查与质量验收
+  - [OpenClaw插件](https://www.npmjs.com/package/@chorus-aidlc/chorus-openclaw-plugin)：通过SSE + MCP双通道架构实现AI Agent 7×24自动感知工程任务并驱动交付
 
 # 工作经历
 
@@ -27,10 +27,11 @@ lang: "zh"
 ### **Solutions Builder**/<small>AWS Solutions</small> （ 2023年6月 ~ 至今 ）
 设计并开发基于AWS的行业解决方案，专注于医疗健康与AI Agent领域
 
-- 解决方案开发:
-  - 开发MCS (Marketing & Commercial Set)，基于[Strands Agents](https://strandsagents.com/latest/)和`Amazon Bedrock`的医药销售AI知识管理与培训助手。使用`Amazon Neptune`+`OpenSearch Serverless`构建GraphRAG知识图谱，支持STAR案例方法论、AI驱动的销售策略推荐与模拟训练
-  - 开发[Medical Deep Insights](https://mp.weixin.qq.com/s/ony8yF8s_gP7NAcLeU9r6w)，基于[Strands Agents](https://strandsagents.com/latest/)的医疗内容生成助手。支持通过YAML配置和AI编程助手(Skill)快速生成Agent与Tool，集成PubMed/临床试验/专利检索等15+工具，通过MCP协议扩展外部能力，部署于`Bedrock AgentCore`
-  - 开发[Medical Insights Hub](https://www.amazonaws.cn/en/solutions/industry/health/medical-insights-hub/)，基于AWS的医疗内容生成解决方案。基于GenAI实现专业医疗文档翻译，通过`OpenSearch Percolate`支持百万级术语表匹配；支持对接PubMed等外部知识库协作生成医疗内容，并提供Word插件集成
+- AI Agent解决方案:
+  - 开发MCS (Marketing & Commercial Set)，基于[Strands Agents](https://strandsagents.com/latest/)和`Amazon Bedrock`的多Agent知识管理平台。使用`Amazon Neptune`+`OpenSearch Serverless`构建GraphRAG知识图谱，实现基于图检索的精准知识问答与策略推荐
+  - 开发[Medical Deep Insights](https://mp.weixin.qq.com/s/ony8yF8s_gP7NAcLeU9r6w)，基于[Strands Agents](https://strandsagents.com/latest/)的可配置Agent平台。通过YAML配置快速生成Agent与Tool，集成15+外部工具，通过MCP协议扩展能力，部署于`Bedrock AgentCore`
+- 数据与搜索:
+  - 开发[Medical Insights Hub](https://www.amazonaws.cn/en/solutions/industry/health/medical-insights-hub/)，通过`OpenSearch Percolate`实现百万级术语表实时匹配，基于GenAI实现专业文档翻译，提供Word插件集成
 
 ## SAP Labs China （ 2016年10月 ~ 2023年6月 ）
 架构师，Web应用(前后端)开发，DevOps以及数据工程师。
@@ -59,14 +60,10 @@ SAP Jam Collaboration是一个基于`Ruby on Rails`/`React`的团队协作工具
 - 引入`Consul`+`HAproxy`实现服务发现，部署`Istio` Service Mesh实现金丝雀部署与流量监控
 - 与跨国团队协作，支持多时区不间断DevOps运维
 
-### **Full Stack Developer**/<small>SAP Jam Collaboration</small> （ 2017年10月 ~ 2019年3月 ）
+### **Full Stack Developer**/<small>SAP Jam</small> （ 2016年10月 ~ 2019年3月 ）
 
-- 前端：编写`BackboneJS`→`React`/`TypeScript`迁移抽象层，实现新老代码共存
-- 后端：开发基于`NodeJS`的SSR服务、基于`Golang`的多存储介质文件服务（S3/Azure Blob/NAS）
-
-### **Frontend Developer**/<small>SAP Jam Community</small> （ 2016年10月 ~ 2017年10月 ）
-
-基于`EmberJS`/`Vue`/`Ruby on Rails`的社交平台前端开发
+- 基于`NodeJS`的SSR服务、基于`Golang`的多存储介质文件服务（S3/Azure Blob/NAS）
+- `BackboneJS`→`React`/`TypeScript`前端框架迁移
 
 # 认证
 <p class="d-flex justify-content-between">
