@@ -9,14 +9,14 @@ lang: "en"
 # Personal Information
  - **Felix Chen**/Male
  - Master/Graduated at 2017/East China University of Science and Technology/Computer Science and Technology
- - Blog: [https://chennima.github.io/blog](https://chennima.github.io/blog)
+ - Blog: [https://chennima.github.io/blog](https://chennima.github.io/blog) / [https://chorus-ai.dev/blog/](https://chorus-ai.dev/blog/)
  - Github: [https://github.com/ChenNima](https://github.com/ChenNima)
  - LinkedIn: [https://www.linkedin.com/in/yifei-chen-990199110/](https://www.linkedin.com/in/yifei-chen-990199110/)
  - E-mail: fennu637@sina.com<span class="d-none"> / Phone：18918561263</span>
 
 # Open Source Projects
 
-- [Chorus](https://github.com/Chorus-AIDLC/chorus): An Agent harness framework based on [AI-DLC](https://aws.amazon.com/blogs/devops/ai-driven-development-life-cycle/) methodology that provides Skills, MCP toolsets and task management environment for AI Agents, driving autonomous end-to-end software engineering workflows from Idea → design → task breakdown → implementation → verification
+- **Chorus** ([https://github.com/Chorus-AIDLC/Chorus](https://github.com/Chorus-AIDLC/Chorus)): An Agent harness framework based on [AI-DLC](https://aws.amazon.com/blogs/devops/ai-driven-development-life-cycle/) methodology that provides Skills, MCP toolsets and task management environment for AI Agents, driving autonomous end-to-end software engineering workflows from Idea → design → task breakdown → implementation → verification
   - [Claude Code Plugin](https://github.com/Chorus-AIDLC/Chorus/tree/main/public/chorus-plugin): Multi-Agent orchestration via Hooks and custom Agent mechanisms, with automatic context injection and independent Agent spawning for task review and quality verification
   - [OpenClaw Plugin](https://www.npmjs.com/package/@chorus-aidlc/chorus-openclaw-plugin): SSE + MCP dual-channel architecture enabling AI Agents to autonomously detect engineering tasks and drive delivery 24/7
 
@@ -25,13 +25,14 @@ lang: "en"
 ## Amazon Web Services （ 2023.6 ~ Present ）
 
 ### **Solutions Builder**/<small>AWS Solutions</small> （ 2023.6 ~ Present ）
-Design and develop AWS-based industry solutions, focusing on healthcare and AI Agent domains
 
-- AI Agent Solutions:
-  - Developed MCS (Marketing & Commercial Set), a multi-Agent knowledge management platform based on [Strands Agents](https://strandsagents.com/latest/) and `Amazon Bedrock`. Built GraphRAG knowledge graph with `Amazon Neptune` + `OpenSearch Serverless` for graph-based precise knowledge Q&A and strategy recommendation
-  - Developed [Medical Deep Insights](https://mp.weixin.qq.com/s/ony8yF8s_gP7NAcLeU9r6w), a configurable Agent platform based on [Strands Agents](https://strandsagents.com/latest/). Rapid Agent and Tool generation via YAML configuration, integrates 15+ external tools, extends capabilities through MCP protocol, deployed on `Bedrock AgentCore`
-- Data & Search:
-  - Developed [Medical Insights Hub](https://www.amazonaws.cn/en/solutions/industry/health/medical-insights-hub/), featuring million-level glossary real-time matching via `OpenSearch Percolate`, GenAI-powered professional document translation, with Word plugin integration
+A Customer-Facing Builder spanning software engineering and customer delivery: co-creating closely with customers, rapidly building PoCs, and delivering into production together with professional services teams and partners. Focused on healthcare and AI Agent domains.
+
+- AI Agent Assets (Tech Lead):
+  - Led MCS (Marketing & Commercial Set), a multi-Agent sales knowledge management platform based on [Strands Agents](https://strandsagents.com/latest/) and `Amazon Bedrock`. Built dual GraphRAG knowledge graphs with `Amazon Neptune` + `OpenSearch Serverless` for precise knowledge Q&A and strategy recommendation
+  - Led [Medical Deep Insights](https://mp.weixin.qq.com/s/ony8yF8s_gP7NAcLeU9r6w), a configurable deep-research Agent platform based on [Strands Agents](https://strandsagents.com/latest/) and `Bedrock AgentCore`, integrating multi-source tools via the MCP protocol and enabling dedicated research Agents to be generated dynamically from natural language
+- Data & Search (Tech Lead):
+  - Led [Medical Insights Hub](https://www.amazonaws.cn/en/solutions/industry/health/medical-insights-hub/), featuring large-scale glossary real-time matching via `OpenSearch Percolate`, GenAI-powered professional document translation, with Word plugin integration
 
 ## SAP Labs China （ 2016.10 ~ 2023.6 ）
 Architect, Web development (Frontend/backend), DevOps and data engineer.
@@ -78,14 +79,14 @@ SAP Jam Collaboration is a collaboration tool based on `Ruby on Rails`/`React`.
 # Skills
 
 ### Familiar with
-- AI/Agent: Strands Agents/Claude Code Plugin/OpenClaw Plugin/LangChain/Amazon Bedrock/MCP/SSE
+- AI/Agent: Strands Agents/Agent Harness/Claude Code Plugin/OpenClaw Plugin/LangChain/Amazon Bedrock/MCP/SSE/GraphRAG
 - Web development: TypeScript/JavaScript/Python/HTML/CSS/Webpack/NodeJS
 - DevOps: AWS/Docker/Kubernetes/Terraform
 - Web framework: React/Next.js/FastAPI/Vue/NestJS
-- Data engineering: AWS Athena/AWS DynamoDB
+- Data engineering: Amazon Neptune/Amazon OpenSearch/AWS Athena/AWS DynamoDB
 
 ### Know about
 - Web development: Ruby on Rails/GraphQL/Golang/SEO
-- DevOps: Jenkins/Service Mesh/Istio/Helm/ArgoCD/GitOps
-- Data engineering: AWS Glue(Spark)/MySQL
+- DevOps: Jenkins/Service Mesh/Istio/Helm/ArgoCD/GitOps/AWS CDK
+- Data engineering: AWS Glue(Spark)/Amazon Redshift/Amazon Aurora/MySQL
 - Machine learning: PaddlePaddle/CNN/SDMG-R

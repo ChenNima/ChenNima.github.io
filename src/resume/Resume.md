@@ -9,14 +9,14 @@ lang: "zh"
 # 个人信息
  - **陈逸斐**/男
  - 硕士/2017年毕业/华东理工大学 计算机科学与技术
- - 博客：[https://chennima.github.io/blog](https://chennima.github.io/blog)
+ - 博客：[https://chennima.github.io/blog](https://chennima.github.io/blog) / [https://chorus-ai.dev/blog/](https://chorus-ai.dev/blog/)
  - Github：[https://github.com/ChenNima](https://github.com/ChenNima)
  - LinkedIn：[https://www.linkedin.com/in/yifei-chen-990199110/](https://www.linkedin.com/in/yifei-chen-990199110/)
  - 邮箱：fennu637@sina.com<span class="d-none"> / 手机：18918561263</span>
 
 # 开源项目
 
-- [Chorus](https://github.com/Chorus-AIDLC/chorus)：基于[AI-DLC](https://aws.amazon.com/blogs/devops/ai-driven-development-life-cycle/)方法论的Agent harness框架，为AI Agent构建Skills、MCP工具集与任务管理环境，驱动Agent自主完成从Idea→方案设计→任务拆分→代码实现→验收的端到端软件工程工作流
+- **Chorus**（[https://github.com/Chorus-AIDLC/Chorus](https://github.com/Chorus-AIDLC/Chorus)）：基于[AI-DLC](https://aws.amazon.com/blogs/devops/ai-driven-development-life-cycle/)方法论的Agent harness框架，为AI Agent构建Skills、MCP工具集与任务管理环境，驱动Agent自主完成从Idea→方案设计→任务拆分→代码实现→验收的端到端软件工程工作流
   - [Claude Code插件](https://github.com/Chorus-AIDLC/Chorus/tree/main/public/chorus-plugin)：通过Hooks与自定义Agent机制实现多Agent协作，自动注入Agent上下文并启动独立Agent进行任务审查与质量验收
   - [OpenClaw插件](https://www.npmjs.com/package/@chorus-aidlc/chorus-openclaw-plugin)：通过SSE + MCP双通道架构实现AI Agent 7×24自动感知工程任务并驱动交付
 
@@ -25,13 +25,14 @@ lang: "zh"
 ## Amazon Web Services （ 2023年6月 ~ 至今 ）
 
 ### **Solutions Builder**/<small>AWS Solutions</small> （ 2023年6月 ~ 至今 ）
-设计并开发基于AWS的行业解决方案，专注于医疗健康与AI Agent领域
 
-- AI Agent解决方案:
-  - 开发MCS (Marketing & Commercial Set)，基于[Strands Agents](https://strandsagents.com/latest/)和`Amazon Bedrock`的多Agent知识管理平台。使用`Amazon Neptune`+`OpenSearch Serverless`构建GraphRAG知识图谱，实现基于图检索的精准知识问答与策略推荐
-  - 开发[Medical Deep Insights](https://mp.weixin.qq.com/s/ony8yF8s_gP7NAcLeU9r6w)，基于[Strands Agents](https://strandsagents.com/latest/)的可配置Agent平台。通过YAML配置快速生成Agent与Tool，集成15+外部工具，通过MCP协议扩展能力，部署于`Bedrock AgentCore`
-- 数据与搜索:
-  - 开发[Medical Insights Hub](https://www.amazonaws.cn/en/solutions/industry/health/medical-insights-hub/)，通过`OpenSearch Percolate`实现百万级术语表实时匹配，基于GenAI实现专业文档翻译，提供Word插件集成
+面向客户的解决方案构建者（Customer-Facing Builder）：横跨软件工程与客户交付，与客户密集共创、快速构建PoC，配合专业支持团队和合作伙伴交付落地。专注医疗健康与AI Agent领域。
+
+- AI Agent资产（Tech Lead）:
+  - 主导MCS (Marketing & Commercial Set)，基于[Strands Agents](https://strandsagents.com/latest/)与`Amazon Bedrock`的多Agent销售知识管理平台，使用`Amazon Neptune`+`OpenSearch Serverless`构建双GraphRAG知识图谱，实现精准知识问答与策略推荐
+  - 主导[Medical Deep Insights](https://mp.weixin.qq.com/s/ony8yF8s_gP7NAcLeU9r6w)，基于[Strands Agents](https://strandsagents.com/latest/)与`Bedrock AgentCore`的可配置深度研究Agent平台，通过MCP协议集成多源工具，支持以自然语言动态生成专属研究Agent
+- 数据与搜索（Tech Lead）:
+  - 主导[Medical Insights Hub](https://www.amazonaws.cn/en/solutions/industry/health/medical-insights-hub/)，通过`OpenSearch Percolate`实现超大规模术语表实时匹配，基于GenAI实现专业文档翻译并提供Word插件集成
 
 ## SAP Labs China （ 2016年10月 ~ 2023年6月 ）
 架构师，Web应用(前后端)开发，DevOps以及数据工程师。
@@ -77,14 +78,14 @@ SAP Jam Collaboration是一个基于`Ruby on Rails`/`React`的团队协作工具
 # 技能
 
 ### 熟悉
-- AI/Agent: Strands Agents/Claude Code Plugin/OpenClaw Plugin/LangChain/Amazon Bedrock/MCP/SSE
+- AI/Agent: Strands Agents/Agent Harness/Claude Code Plugin/OpenClaw Plugin/LangChain/Amazon Bedrock/MCP/SSE/GraphRAG
 - Web开发: TypeScript/JavaScript/Python/HTML/CSS/Webpack/NodeJS
 - DevOps: AWS/Docker/Kubernetes/Terraform
 - Web框架: React/Next.js/FastAPI/Vue/NestJS
-- 数据工程: AWS Athena/AWS DynamoDB
+- 数据工程: Amazon Neptune/Amazon OpenSearch/AWS Athena/AWS DynamoDB
 
 ### 了解
 - Web开发: Ruby on Rails/GraphQL/Golang/SEO
-- DevOps: Jenkins/Service Mesh/Istio/Helm/ArgoCD/GitOps
-- 数据工程: AWS Glue(Spark)/MySQL
+- DevOps: Jenkins/Service Mesh/Istio/Helm/ArgoCD/GitOps/AWS CDK
+- 数据工程: AWS Glue(Spark)/Amazon Redshift/Amazon Aurora/MySQL
 - 机器学习: PaddlePaddle/CNN/SDMG-R
