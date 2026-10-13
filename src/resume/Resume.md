@@ -11,14 +11,13 @@ lang: "zh"
  - 硕士/2017年毕业/华东理工大学 计算机科学与技术
  - 博客：[https://chennima.github.io/blog](https://chennima.github.io/blog) / [https://chorus-ai.dev/blog/](https://chorus-ai.dev/blog/)
  - Github：[https://github.com/ChenNima](https://github.com/ChenNima)
- - LinkedIn：[https://www.linkedin.com/in/yifei-chen-990199110/](https://www.linkedin.com/in/yifei-chen-990199110/)
  - 邮箱：fennu637@sina.com<span class="d-none"> / 手机：18918561263</span>
+
+十年软件工程经验，涵盖全栈开发、DevOps、云架构，近年专注于AI Agent方向。作为面向客户的解决方案构建者，深入一线与客户共创、梳理需求并交付落地，主导多个行业旗舰级AI Agent资产从0到1落地，并将一线实践沉淀为可复用的工程范式。
 
 # 开源项目
 
-- **Chorus**（[https://github.com/Chorus-AIDLC/Chorus](https://github.com/Chorus-AIDLC/Chorus)）：基于[AI-DLC](https://aws.amazon.com/blogs/devops/ai-driven-development-life-cycle/)方法论的Agent harness框架，为AI Agent构建Skills、MCP工具集与任务管理环境，驱动Agent自主完成从Idea→方案设计→任务拆分→代码实现→验收的端到端软件工程工作流
-  - [Claude Code插件](https://github.com/Chorus-AIDLC/Chorus/tree/main/public/chorus-plugin)：通过Hooks与自定义Agent机制实现多Agent协作，自动注入Agent上下文并启动独立Agent进行任务审查与质量验收
-  - [OpenClaw插件](https://www.npmjs.com/package/@chorus-aidlc/chorus-openclaw-plugin)：通过SSE + MCP双通道架构实现AI Agent 7×24自动感知工程任务并驱动交付
+- **Chorus**（[https://github.com/Chorus-AIDLC/Chorus](https://github.com/Chorus-AIDLC/Chorus)，GitHub 1.2k+ Star）：面向AI与人类协作的Agent Harness，受[AI-DLC](https://aws.amazon.com/blogs/devops/ai-driven-development-life-cycle/)方法论启发，以「AI提议、人类验证」驱动从想法→方案设计→任务拆分→代码实现→验收的端到端软件工程工作流
 
 # 工作经历
 
@@ -26,7 +25,7 @@ lang: "zh"
 
 ### **Solutions Builder**/<small>AWS Solutions</small> （ 2023年6月 ~ 至今 ）
 
-面向客户的解决方案构建者（Customer-Facing Builder）：横跨软件工程与客户交付，与客户密集共创、快速构建PoC，配合专业支持团队和合作伙伴交付落地。专注医疗健康与AI Agent领域。
+面向客户的解决方案构建者（Customer-Facing Builder）：横跨软件工程与客户交付，与客户密集共创、快速构建PoC，配合专业支持团队和合作伙伴交付落地。专注医疗健康与AI Agent领域，主导的多个行业旗舰级资产已在多家跨国药企（MNC）落地。
 
 - AI Agent资产（Tech Lead）:
   - 主导MCS (Marketing & Commercial Set)，基于[Strands Agents](https://strandsagents.com/latest/)与`Amazon Bedrock`的多Agent销售知识管理平台，使用`Amazon Neptune`+`OpenSearch Serverless`构建双GraphRAG知识图谱，实现精准知识问答与策略推荐

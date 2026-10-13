@@ -7,16 +7,17 @@ lang: "en"
 ---
 
 # Personal Information
- - **Felix Chen**/Male
+ - **Yifei Chen**/Male
  - Master/Graduated at 2017/East China University of Science and Technology/Computer Science and Technology
  - Blog: [https://chennima.github.io/blog](https://chennima.github.io/blog) / [https://chorus-ai.dev/blog/](https://chorus-ai.dev/blog/)
  - Github: [https://github.com/ChenNima](https://github.com/ChenNima)
- - LinkedIn: [https://www.linkedin.com/in/yifei-chen-990199110/](https://www.linkedin.com/in/yifei-chen-990199110/)
  - E-mail: fennu637@sina.com<span class="d-none"> / Phone：18918561263</span>
+
+A software engineer with a decade of experience across full-stack development, DevOps, and cloud architecture, focused on AI Agents in recent years. As a Customer-Facing Builder spanning software engineering and customer delivery, works on the front line to co-create with customers, shape requirements, and deliver into production, having led several industry-flagship AI Agent assets from zero to one and distilled hands-on practice into reusable engineering paradigms.
 
 # Open Source Projects
 
-- **Chorus** ([https://github.com/Chorus-AIDLC/Chorus](https://github.com/Chorus-AIDLC/Chorus)): An Agent harness framework based on [AI-DLC](https://aws.amazon.com/blogs/devops/ai-driven-development-life-cycle/) methodology that provides Skills, MCP toolsets and task management environment for AI Agents, driving autonomous end-to-end software engineering workflows from Idea → design → task breakdown → implementation → verification
+- **Chorus** ([https://github.com/Chorus-AIDLC/Chorus](https://github.com/Chorus-AIDLC/Chorus), 1.1k+ GitHub stars): An Agent Harness for AI-human collaboration, inspired by the [AI-DLC](https://aws.amazon.com/blogs/devops/ai-driven-development-life-cycle/) methodology, driving end-to-end software engineering workflows from idea → design → task breakdown → implementation → verification through an "AI proposes, humans verify" reversed collaboration
   - [Claude Code Plugin](https://github.com/Chorus-AIDLC/Chorus/tree/main/public/chorus-plugin): Multi-Agent orchestration via Hooks and custom Agent mechanisms, with automatic context injection and independent Agent spawning for task review and quality verification
   - [OpenClaw Plugin](https://www.npmjs.com/package/@chorus-aidlc/chorus-openclaw-plugin): SSE + MCP dual-channel architecture enabling AI Agents to autonomously detect engineering tasks and drive delivery 24/7
 
@@ -26,7 +27,7 @@ lang: "en"
 
 ### **Solutions Builder**/<small>AWS Solutions</small> （ 2023.6 ~ Present ）
 
-A Customer-Facing Builder spanning software engineering and customer delivery: co-creating closely with customers, rapidly building PoCs, and delivering into production together with professional services teams and partners. Focused on healthcare and AI Agent domains.
+A Customer-Facing Builder spanning software engineering and customer delivery: co-creating closely with customers, rapidly building PoCs, and delivering into production together with professional services teams and partners. Focused on healthcare and AI Agent domains, with the industry-flagship assets I led now deployed at multiple multinational pharmaceutical companies (MNCs).
 
 - AI Agent Assets (Tech Lead):
   - Led MCS (Marketing & Commercial Set), a multi-Agent sales knowledge management platform based on [Strands Agents](https://strandsagents.com/latest/) and `Amazon Bedrock`. Built dual GraphRAG knowledge graphs with `Amazon Neptune` + `OpenSearch Serverless` for precise knowledge Q&A and strategy recommendation

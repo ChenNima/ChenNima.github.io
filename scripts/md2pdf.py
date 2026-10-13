@@ -58,7 +58,7 @@ h3 small {
 
 a {
     color: #1565c0;
-    text-decoration: none;
+    text-decoration: underline;
 }
 
 ul {
